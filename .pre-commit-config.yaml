@@ -1,0 +1,9 @@
+# Runs ruff automatically on every `git commit`.
+# Tip: run `pre-commit autoupdate` once to bump `rev` to the latest ruff.
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.0
+    hooks:
+      - id: ruff          # lint + auto-fix
+        args: [--fix]
+      - id: ruff-format   # auto-format

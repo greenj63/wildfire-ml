@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-exclude = ["frontend"]
+
+[tool.ruff.lint]
+# E/F = basic errors, I = import sorting, UP = modern Python, B = common bugs
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
