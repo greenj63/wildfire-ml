@@ -9,7 +9,7 @@ from shared.data_loader import get_dataset_dir
 DATASET_NAME = "wildfire"
 DB_FILENAME = "FPA_FOD_20221014.sqlite"
 
-# TODO: replace with the columns you actually need (check df.columns below)
+# replace with the columns you actually need (check df.columns below)
 COLUMNS_TO_KEEP = [
     "FIRE_NAME",
     "FIRE_YEAR",
@@ -42,7 +42,11 @@ def main() -> None:
         print(preview.columns.tolist())
 
         # Load only what you need
-        query = f"SELECT {', '.join(COLUMNS_TO_KEEP)} FROM Fires;"
+        query = f"""
+            SELECT {", ".join(COLUMNS_TO_KEEP)} FROM Fires 
+            WHERE NWCG_CAUSE_CLASSIFICATION = 'Natural';
+            """
+
         df = pd.read_sql_query(query, con=conn)
 
     print(df.shape)
