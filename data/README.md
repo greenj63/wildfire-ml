@@ -11,6 +11,7 @@ under `data/raw/`, and it's what you pass to `load_dataset("<dataset_name>")`.
 | Dataset name | Source | Raw file (download this) | Processed file (made by script) | Script | Added by |
 |---|---|---|---|---|---|
 | `wildfire` | https://www.kaggle.com/datasets/braddarrow/23-million-wildfires | `data/raw/wildfire/FPA_FOD_20221014.sqlite` | `data/processed/wildfire/wildfire_clean.csv` | `scripts/process_wildfire_data.py` | Arlim Macaldo |
+| `droughts` | https://www.kaggle.com/datasets/cdminix/us-drought-meteorological-data | `test_timeseries.csv`, `train_timeseries.csv`, `validation_timeseries.csv` | `data/processed/droughts/drought_clean.csv` | `scripts/process_drought_data.py` | Arlim Macaldo |
 
 (Add a row whenever you add a dataset or a new processed file.)
 
