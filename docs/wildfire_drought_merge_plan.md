@@ -1,6 +1,7 @@
 # Plan: combined wildfire + drought dataset
 
-**Status:** planned, not built yet.
+**Status:** built. Run `python -m scripts.process_wildfire_drought_data` (after the
+wildfire and drought scripts).
 
 Goal: one processed dataset where each row is a wildfire with the drought and weather
 conditions of its county around the time it was discovered, so the two can be compared
@@ -51,14 +52,29 @@ If several counties match:
 2. Tie: the county with the same FIPS code as the fire.
 3. Tie: the nearest county center.
 
-## Step 5: FIPS backup
+The drought data has a row for every county on every day, so weather is always taken
+on the discovery date and every candidate ties on rule 1. In practice rules 2 and 3
+decide.
 
-If a fire is inside no county's box, join on its `FIPS_CODE` instead, with the same date
-rules. If that also fails, the fire is **dropped**: the dataset only keeps fires that
-have drought data.
+## Step 5: FIPS candidate
+
+A fire's own `FIPS_CODE` county is **always** added as a candidate, even if the fire is
+outside that county's box. Otherwise a fire far from the center of a long or oddly
+shaped county misses its own county's box and gets matched to a neighbor. Because of the
+Step 4 tie-break, a fire with a FIPS code is matched to its own county whenever that
+county has drought data. Fires without a FIPS code (about 38%) rely on lat/long only.
+
+Some fires have a FIPS code that doesn't fit their coordinates (e.g. a fire near Las
+Vegas labeled Washoe County, 631 km away). So the own county is only added if the fire
+is within **2× the county's box half-width** of its center (`OWN_COUNTY_RANGE_FACTOR`).
+Farther than that, the FIPS code is treated as wrong and lat/long decides.
+
+If a fire has no candidate with drought data, it is **dropped**: the dataset only keeps
+fires that have drought data.
 
 Each row records how it was matched:
-- `MATCH_METHOD`: `latlon` or `fips`
+- `MATCH_METHOD`: `latlon` (the county's box contains the fire) or `fips` (it's the
+  fire's own county, but the fire is outside its box)
 - `MATCH_DISTANCE_KM`: distance from the fire to the matched county's center
 
 Alaska, Hawaii, and Puerto Rico aren't in the drought data, so their fires are dropped.
@@ -82,7 +98,7 @@ matched fires exist):
 To stay fast, the 23M-row drought file is read in chunks, keeping only the county/date
 pairs some fire needs.
 
-## Changes to existing files when this is built
+## Changes to existing files
 
 - `scripts/process_wildfire_data.py`: keep `FOD_ID`, `FIPS_CODE`, `FIPS_NAME`; add
   `DURATION_DAYS` and `SPREAD_RATE`. Teammates must re-run it, since its columns change.

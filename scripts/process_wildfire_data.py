@@ -11,6 +11,7 @@ DB_FILENAME = "FPA_FOD_20221014.sqlite"
 
 # replace with the columns you actually need (check df.columns below)
 COLUMNS_TO_KEEP = [
+    "FOD_ID",
     "FIRE_NAME",
     "FIRE_YEAR",
     "DISCOVERY_DATE",
@@ -28,7 +29,23 @@ COLUMNS_TO_KEEP = [
     "LONGITUDE",
     "STATE",
     "COUNTY",
+    "FIPS_CODE",
+    "FIPS_NAME",
 ]
+
+
+def add_spread_rate(df: pd.DataFrame) -> pd.DataFrame:
+    """Add DURATION_DAYS and SPREAD_RATE (acres burned per day until containment).
+
+    Full dates are used (not day-of-year) so fires that cross New Year work. A fire
+    contained on the day it was discovered counts as 1 day. Both columns are empty
+    when CONT_DATE is missing.
+    """
+    discovery = pd.to_datetime(df["DISCOVERY_DATE"], format="%m/%d/%Y")
+    containment = pd.to_datetime(df["CONT_DATE"], format="%m/%d/%Y")
+    df["DURATION_DAYS"] = (containment - discovery).dt.days + 1
+    df["SPREAD_RATE"] = df["FIRE_SIZE"] / df["DURATION_DAYS"]
+    return df
 
 
 def main() -> None:
@@ -48,6 +65,8 @@ def main() -> None:
             """
 
         df = pd.read_sql_query(query, con=conn)
+
+    df = add_spread_rate(df)
 
     print(df.shape)
     print(df.head())

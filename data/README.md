@@ -12,6 +12,8 @@ under `data/raw/`, and it's what you pass to `load_dataset("<dataset_name>")`.
 |---|---|---|---|---|---|
 | `wildfire` | https://www.kaggle.com/datasets/braddarrow/23-million-wildfires | `data/raw/wildfire/FPA_FOD_20221014.sqlite` | `data/processed/wildfire/wildfire_clean.csv` | `scripts/process_wildfire_data.py` | Arlim Macaldo |
 | `droughts` | https://www.kaggle.com/datasets/cdminix/us-drought-meteorological-data | `test_timeseries.csv`, `train_timeseries.csv`, `validation_timeseries.csv` | `data/processed/droughts/drought_clean.csv` | `scripts/process_drought_data.py` | Arlim Macaldo |
+| `county_centroids` | https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2020_Gazetteer/2020_Gaz_counties_national.zip | `data/raw/county_centroids/2020_Gaz_counties_national.txt` (unzip it) | none (used by `wildfire_drought`) | none | Arlim Macaldo |
+| `wildfire_drought` | Made from `wildfire`, `droughts`, and `county_centroids` (set those up first) | none | `data/processed/wildfire_drought/wildfire_drought.csv` | `scripts/process_wildfire_drought_data.py` | Arlim Macaldo |
 
 (Add a row whenever you add a dataset or a new processed file.)
 
