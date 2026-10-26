@@ -1,6 +1,8 @@
 # Plan: shared target and evaluation protocol
 
-**Status:** planned, not built yet.
+**Status:** shared pieces built (`shared/experiment.py`, `build_preprocessor()`,
+`evaluate_spread_rate()`, the `train.csv`/`validation.csv`/`test.csv` files, the template, `scripts/compare_models.py`).
+Models and the baseline are not built yet.
 
 **Who builds what:** this plan covers only the shared pieces (data, split, features,
 preprocessing, metrics, template, comparison script). Each member implements, tunes,
@@ -38,21 +40,25 @@ have a target (currently only 85,896 do).
 
 ## 2. Split (fixed, saved, used by everyone)
 
-Split by year:
+One script (`python -m scripts.make_split`) splits the 100,000 fires at random with a
+fixed seed (42), using scikit-learn's `GroupShuffleSplit`:
 
-| Split | Years | Approx. rows | Used for |
-|---|---|---|---|
-| Train | 2000–2014 | 69K | Fitting |
-| Validation | 2015–2017 | 9K | Choosing hyperparameters |
-| Test | 2018–2020 | 8K | Final score, once, after everything is frozen |
+| Split | Rows | Used for |
+|---|---|---|
+| Train | 79,961 (80%) | Fitting |
+| Validation | 10,026 (10%) | Choosing hyperparameters |
+| Test | 10,013 (10%) | Final score, once, after everything is frozen |
 
-Why by year:
-- It matches the use case: learn from past fires, predict future ones.
-- 12,916 county-days have more than one fire, and those fires share identical weather.
-  A random split would put some in train and some in test, which leaks.
+Why grouped:
+- 12,916 county-days have more than one fire, and those fires share identical weather
+  and drought values. A plain `train_test_split` would put some in train and some in
+  test, which leaks. Grouping by county + discovery date keeps each county-day in one
+  file.
 
-The split is saved as a file listing each `FOD_ID` and its split, so the exact rows are
-recorded and every model uses the same ones.
+The three splits are saved as `train.csv`, `validation.csv`, and `test.csv` in
+`data/processed/wildfire_drought/` and committed to Git, so every member pulls the exact
+same rows (each row keeps its `FOD_ID`). The same seed and data always give the same
+files.
 
 ## 3. Features
 
@@ -73,7 +79,7 @@ Not allowed as features:
 | `FOD_ID`, `FIRE_NAME`, `COUNTY`, `FIPS_CODE`, `FIPS_NAME`, `DROUGHT_FIPS` | IDs or names, not useful signal |
 | `NWCG_CAUSE_CLASSIFICATION`, `NWCG_GENERAL_CAUSE`, `NWCG_CAUSE_AGE_CATEGORY` | The same for every row (all natural fires) |
 | `MATCH_METHOD`, `MATCH_DISTANCE_KM`, `SCORE_DATE` | Made by the merge, not facts about the fire |
-| `FIRE_YEAR`, `DISCOVERY_DATE` | With a split by year, the test years are never seen in training |
+| `FIRE_YEAR`, `DISCOVERY_DATE` | The use case is future fires, whose year never appears in the training data |
 
 ## 4. Preprocessing (no leakage)
 

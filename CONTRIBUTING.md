@@ -5,7 +5,9 @@
 1. Work on a branch, never directly on `main`.
 2. Only edit your own algorithm folder (unless the change is meant for `shared/`).
 3. Tell the group before changing anything in `shared/`; another person reviews it.
-4. Never commit data, saved models, or secrets (`.gitignore` helps, but check).
+4. Never commit data, saved models, or secrets (`.gitignore` helps, but check). The one
+   exception is the team's `train.csv`, `validation.csv`, and `test.csv` in
+   `data/processed/wildfire_drought/`.
 5. Add a package to `requirements.txt` only if you use it, in its own small PR.
 6. Python version is managed by pyenv (3.12, set in `.python-version`). Don't change that file or create extra environments.
 

@@ -49,3 +49,19 @@ def save_metrics(metrics: dict, algorithm_name: str) -> Path:
     path = get_model_dir(algorithm_name) / "metrics.json"
     path.write_text(json.dumps(metrics, indent=2))
     return path
+
+
+def get_versions() -> dict:
+    """Python and package versions, saved with each run's results."""
+    import platform
+
+    import pandas as pd
+    import sklearn
+
+    return {
+        "python": platform.python_version(),
+        "numpy": np.__version__,
+        "pandas": pd.__version__,
+        "scikit-learn": sklearn.__version__,
+        "joblib": joblib.__version__,
+    }

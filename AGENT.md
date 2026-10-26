@@ -28,7 +28,7 @@ backend and React frontend.
 | Environment | **ONE `.venv` at the repo root.** No per-algorithm venvs, no per-algorithm requirements files |
 | Dependencies | One root `requirements.txt` (runtime) and `requirements-dev.txt` (ruff, pytest, pre-commit) |
 | Formatting/linting | **ruff**, run automatically on every commit via pre-commit |
-| Datasets | **Shared** across all algorithms, stored in `data/`, never committed to Git |
+| Datasets | **Shared** across all algorithms, stored in `data/`, never committed to Git. **Exception:** `train.csv`, `validation.csv`, `test.csv` in `data/processed/wildfire_drought/` (the team experiment's split) are committed; `wildfire_drought.csv` there is not |
 | Saved models/metrics | Stored in `models/<algorithm_name>/`, never committed to Git |
 | Tests | Optional for now |
 | Experiment tracking | None. Each training run writes `metrics.json` |
@@ -113,9 +113,9 @@ algorithm can be run, evaluated, and (later) served the same way.
 
 | File | Must provide | Rules |
 |---|---|---|
-| `model.py` | `build_model()` returning an **untrained** estimator | Only defines the model. No data loading, no training |
-| `train.py` | `main()` plus `if __name__ == "__main__": main()` | Loads data via `shared`, splits, trains, evaluates, saves model and `metrics.json` |
-| `predict.py` | `predict(input_data: dict)` returning one prediction | Loads the saved model via `shared.utils.load_model`; caches it; no training here |
+| `model.py` | `MEMBER`, `PARAM_GRID`, and `build_model(seed, **params)` returning an **untrained** regressor | Only defines the model. No data loading, no training. Written by the member, never by an AI agent |
+| `train.py` | `main()` plus `if __name__ == "__main__": main()` | Shared protocol (docs/evaluation_plan.md): tunes `PARAM_GRID` on validation, freezes the best setting, runs 5 seeds, scores test once, saves model and `metrics.json`. Members normally don't edit it |
+| `predict.py` | `predict(input_data: dict)` returning one spread rate (acres/day) | Loads the saved model via `shared.utils.load_model`; caches it; no training here |
 | `README.md` | Owner, what it does, data used, how to run, results | Keep it filled in |
 | `__init__.py` | Empty file | **Never delete** (needed for imports) |
 
@@ -124,20 +124,21 @@ Template details worth knowing:
   name automatically. **Do not hardcode or rename it.**
 - Imports inside an algorithm use `from .model import build_model` (relative) and
   `from shared.xxx import ...` (absolute). This is what makes copying `_template/` safe.
-- In `train.py` the user sets `DATASET_NAME` (folder under `data/raw/`) and
-  `TARGET_COLUMN`. It defaults to `evaluate_classification`; switch to
-  `evaluate_regression` for regression.
-- `predict()` takes a dict like `{"age": 30, "income": 50000}` and wraps it in a
-  one-row DataFrame, so column names must match training.
+- Every model uses the same target, features, and split from `shared/experiment.py`
+  and the committed split files in `data/processed/wildfire_drought/`. The shared preprocessing (`build_preprocessor()`) is placed
+  before the member's model in a Pipeline, so it's fitted on training data only.
+- `predict()` takes a dict of the raw feature columns (see the example in the
+  template), adds the derived columns, and converts the prediction back to acres/day.
 
 ### Shared utilities (what exists, so you reuse instead of rewriting)
 
 | Module | Functions |
 |---|---|
-| `shared/data_loader.py` | `get_dataset_dir(name, processed=False)`, `load_dataset(name, filename=None, processed=False)` (loads a CSV; if no filename, the folder must contain exactly one CSV), `split_data(df, target_column, test_size=0.2, seed=42)` → `X_train, X_test, y_train, y_test` |
-| `shared/preprocessing.py` | `fill_missing_values(df)`, `encode_categories(df)` (one-hot), `normalize(df)` |
-| `shared/evaluation.py` | `accuracy`, `rmse`, `r2`, `evaluate_classification(y_true, y_pred)`, `evaluate_regression(y_true, y_pred)` (each returns a dict) |
-| `shared/utils.py` | `get_project_root()`, `set_random_seed(seed=42)`, `get_model_dir(name)`, `save_model(model, name)`, `load_model(name)`, `save_metrics(dict, name)` |
+| `shared/experiment.py` | `TARGET_COLUMN`, `NUMERIC_FEATURES`, `CATEGORICAL_FEATURES`, `FEATURES`, `SPLIT_SEED`, `SPLIT_DESCRIPTION`, `add_derived_columns(df)`, `make_split(df)` (grouped random split), `split_path(name)`, `load_experiment_data()` → `{"train"/"validation"/"test": (X, y)}` |
+| `shared/data_loader.py` | `get_dataset_dir(name, processed=False)`, `load_dataset(name, filename=None, processed=False, **read_csv_kwargs)` (loads a CSV; if no filename, the folder must contain exactly one CSV), `split_data(df, target_column, test_size=0.2, seed=42)` → `X_train, X_test, y_train, y_test` (not used by the team experiment) |
+| `shared/preprocessing.py` | `build_preprocessor()` (leak-free, use this); older `fill_missing_values(df)`, `encode_categories(df)`, `normalize(df)` use whole-dataset statistics, so don't use them before the split |
+| `shared/evaluation.py` | `accuracy`, `rmse`, `r2`, `mae`, `evaluate_spread_rate(y_true, y_pred)` (mae, rmse, r2, mae_top10), `evaluate_classification`, `evaluate_regression` (each returns a dict) |
+| `shared/utils.py` | `get_project_root()`, `set_random_seed(seed=42)`, `get_model_dir(name)`, `save_model(model, name)`, `load_model(name)`, `save_metrics(dict, name)`, `get_versions()` |
 
 **Rule for deciding where code goes:** if 2+ algorithms could use it → `shared/`. If it
 only makes sense for one algorithm → keep it in that algorithm's folder. Prefer reusing
@@ -163,6 +164,9 @@ cp -r algorithms/_template algorithms/my_algorithm   # Windows: copy the folder 
 python -m algorithms.my_algorithm.train
 python -m algorithms.my_algorithm.predict
 
+# team comparison table (results/comparison.csv)
+python -m scripts.compare_models
+
 # optional
 pytest
 ruff check . && ruff format .
@@ -184,9 +188,10 @@ Folder names: `lowercase_with_underscores` only (no spaces, dashes, or capitals)
 1. Ask for a folder name (`lowercase_with_underscores`) and which dataset/problem type.
 2. Make sure they're on their own Git branch (see section 6).
 3. Copy `_template/` to `algorithms/<name>/`.
-4. Edit `model.py` (`build_model()`), then `train.py` (`DATASET_NAME`, `TARGET_COLUMN`,
-   classification vs regression), then `predict.py` (example input), then `README.md`.
-5. Confirm the dataset exists in `data/raw/<dataset_name>/` (see C).
+4. The member edits `model.py` (`MEMBER`, `PARAM_GRID`, `build_model()`), then
+   `README.md`. `train.py` and `predict.py` normally stay as they are. Explain and
+   guide, but don't write the model for them.
+5. Confirm the combined dataset is built (`data/README.md`, "For the team experiment").
 6. Run `python -m algorithms.<name>.train`; check `models/<name>/metrics.json` appears.
 7. Run `python -m algorithms.<name>.predict` with a realistic example.
 8. New packages? Add to `requirements.txt` (see D).
@@ -232,7 +237,7 @@ merge. GitHub Desktop is a fine alternative to the command line.
 **Pre-commit behavior:** ruff runs on every commit. If it reformats files, the commit
 stops. That is normal. Tell the user to run `git add .` and commit again.
 
-**Never** have the user commit: anything in `data/raw/`, `data/processed/`, `models/`,
+**Never** have the user commit: anything in `data/raw/`, `data/processed/` (except the split files in `data/processed/wildfire_drought/`), `models/`,
 `.venv/`, or `.env`. (`.gitignore` blocks these; if `git status` shows them, stop and fix.)
 
 ---

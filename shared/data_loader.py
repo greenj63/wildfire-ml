@@ -15,11 +15,12 @@ def get_dataset_dir(name: str, processed: bool = False) -> Path:
 
 
 def load_dataset(
-    name: str, filename: str | None = None, processed: bool = False
+    name: str, filename: str | None = None, processed: bool = False, **read_csv_kwargs
 ) -> pd.DataFrame:
     """Load a CSV from the shared data folder.
 
     If `filename` is not given, the folder must contain exactly one CSV.
+    Extra keyword arguments go to pd.read_csv (e.g. low_memory=False).
     """
     folder = get_dataset_dir(name, processed)
     if not folder.exists():
@@ -34,8 +35,8 @@ def load_dataset(
                 f"Expected exactly one CSV in {folder}, found {len(csvs)}. "
                 "Pass filename=... to choose one."
             )
-        return pd.read_csv(csvs[0])
-    return pd.read_csv(folder / filename)
+        return pd.read_csv(csvs[0], **read_csv_kwargs)
+    return pd.read_csv(folder / filename, **read_csv_kwargs)
 
 
 def split_data(

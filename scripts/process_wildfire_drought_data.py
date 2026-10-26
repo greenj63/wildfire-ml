@@ -260,6 +260,11 @@ def main() -> None:
     print(f"{len(df):,} fires matched to drought data")
     print(df["MATCH_METHOD"].value_counts())
 
+    # SPREAD_RATE is the shared target (docs/evaluation_plan.md), so fires without
+    # a containment date are dropped before sampling
+    df = df.dropna(subset=["SPREAD_RATE"]).reset_index(drop=True)
+    print(f"{len(df):,} matched fires have a spread rate")
+
     df = limit_rows(df)
 
     out_dir = get_dataset_dir(OUTPUT_NAME, processed=True)

@@ -1,6 +1,38 @@
-"""Cleaning steps that more than one algorithm needs."""
+"""Cleaning steps that more than one algorithm needs.
+
+For the shared experiment, use build_preprocessor(). The older helpers below compute
+their statistics on whatever data you pass them, so using them before the split leaks
+test data into training.
+"""
 
 import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+from shared.experiment import CATEGORICAL_FEATURES, NUMERIC_FEATURES
+
+
+def build_preprocessor() -> ColumnTransformer:
+    """Shared, leak-free preprocessing for the experiment features.
+
+    Numbers: fill gaps with the median, then scale. STATE: one-hot encoding.
+    It's part of each model's Pipeline, so it's only ever fitted on training data.
+    """
+    numeric = Pipeline(
+        [
+            ("impute", SimpleImputer(strategy="median")),
+            ("scale", StandardScaler()),
+        ]
+    )
+    categorical = OneHotEncoder(handle_unknown="ignore")
+    return ColumnTransformer(
+        [
+            ("numeric", numeric, NUMERIC_FEATURES),
+            ("categorical", categorical, CATEGORICAL_FEATURES),
+        ]
+    )
 
 
 def fill_missing_values(df: pd.DataFrame) -> pd.DataFrame:

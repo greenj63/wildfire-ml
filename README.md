@@ -10,7 +10,7 @@ be added later.
 |---|---|
 | `algorithms/` | One folder per algorithm. Copy `_template/` to start yours. |
 | `shared/` | Code used by 2+ algorithms (loading data, metrics, helpers). |
-| `data/` | Shared datasets (downloaded by you, NOT in Git). See `data/README.md`. |
+| `data/` | Shared datasets (downloaded by you, NOT in Git), except the team's `train.csv`, `validation.csv`, and `test.csv` in `data/processed/wildfire_drought/`, which are committed. See `data/README.md`. |
 | `models/` | Saved trained models + `metrics.json` (NOT in Git). |
 | `backend/` | FastAPI app (placeholder for now). |
 | `frontend/` | React app (placeholder for now). |
@@ -69,6 +69,13 @@ python -m algorithms.<algorithm_name>.predict    # try a prediction
 ```
 
 Use dots, not slashes, and no `.py`.
+
+After training, rebuild the team comparison table (`results/comparison.csv`):
+```bash
+python -m scripts.compare_models
+```
+The target, features, split, and metrics every model shares are described in
+`docs/evaluation_plan.md`. Data setup is in `data/README.md`.
 
 ## Adding a new algorithm
 

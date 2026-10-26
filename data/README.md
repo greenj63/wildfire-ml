@@ -2,6 +2,8 @@
 
 All algorithms read data from here. **Data files are NOT committed to Git**, so each
 person downloads the data once and builds the processed files by running a script.
+**Exception:** the team experiment's `train.csv`, `validation.csv`, and `test.csv` (in
+`data/processed/wildfire_drought/`) are committed, so the team needs no downloads.
 
 Folder names use `lowercase_with_underscores`. The dataset name is the folder name
 under `data/raw/`, and it's what you pass to `load_dataset("<dataset_name>")`.
@@ -13,7 +15,7 @@ under `data/raw/`, and it's what you pass to `load_dataset("<dataset_name>")`.
 | `wildfire` | https://www.kaggle.com/datasets/braddarrow/23-million-wildfires | `data/raw/wildfire/FPA_FOD_20221014.sqlite` | `data/processed/wildfire/wildfire_clean.csv` | `scripts/process_wildfire_data.py` | Arlim Macaldo |
 | `droughts` | https://www.kaggle.com/datasets/cdminix/us-drought-meteorological-data | `test_timeseries.csv`, `train_timeseries.csv`, `validation_timeseries.csv` | `data/processed/droughts/drought_clean.csv` | `scripts/process_drought_data.py` | Arlim Macaldo |
 | `county_centroids` | https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2020_Gazetteer/2020_Gaz_counties_national.zip | `data/raw/county_centroids/2020_Gaz_counties_national.txt` (unzip it) | none (used by `wildfire_drought`) | none | Arlim Macaldo |
-| `wildfire_drought` | Made from `wildfire`, `droughts`, and `county_centroids` (set those up first) | none | `data/processed/wildfire_drought/wildfire_drought.csv` | `scripts/process_wildfire_drought_data.py` | Arlim Macaldo |
+| `wildfire_drought` | Made from `wildfire`, `droughts`, and `county_centroids` (set those up first) | none | `wildfire_drought.csv` (not in Git), then `train.csv`, `validation.csv`, `test.csv` (in Git), all in `data/processed/wildfire_drought/` | `scripts/process_wildfire_drought_data.py`, then `scripts/make_split.py` | Arlim Macaldo |
 
 (Add a row whenever you add a dataset or a new processed file.)
 
@@ -26,6 +28,26 @@ under `data/raw/`, and it's what you pass to `load_dataset("<dataset_name>")`.
    `python -m scripts.process_wildfire_data`
 4. Load the processed file in your algorithm:
    `load_dataset("wildfire", filename="wildfire_clean.csv", processed=True)`
+
+### For the team experiment: nothing to download
+
+`train.csv`, `validation.csv`, and `test.csv` in `data/processed/wildfire_drought/`
+**are committed to Git** (the one exception to "no data in Git"), so `git pull` is all a
+teammate needs. The template's `train.py` loads them through `shared/experiment.py`.
+The split is random with a fixed seed (42), and fires from the same county on the same
+day always land in the same file.
+
+Only rebuild it to change how it's made (and tell the group, since every model must be
+re-run). Set up `wildfire`, `droughts`, and `county_centroids` as above, then:
+
+```bash
+python -m scripts.process_wildfire_data
+python -m scripts.process_drought_data
+python -m scripts.process_wildfire_drought_data
+python -m scripts.make_split
+```
+
+Commit the three new split files together. (`wildfire_drought.csv` stays local.)
 
 ## When a processing script changes
 

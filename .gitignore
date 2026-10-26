@@ -13,6 +13,10 @@ data/raw/*
 data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+# Exception: the team experiment's train/validation/test files ARE committed, so
+# nobody has to run a script. The full combined file they're made from is not.
+!data/processed/wildfire_drought/
+data/processed/wildfire_drought/wildfire_drought.csv
 
 # Trained models and metrics are NOT committed
 models/*
