@@ -7,7 +7,7 @@ One or two sentences: which algorithm, and why it's worth comparing against the 
 
 ## Data
 Uses the shared experiment (`docs/evaluation_plan.md`): target `log(1 + SPREAD_RATE)`,
-features from `shared/experiment.py`, and the committed `train.csv`, `validation.csv`, `test.csv` in
+features from `shared/experiment.py`, and the committed `train.csv.gz`, `validation.csv.gz`, `test.csv.gz` in
 `data/processed/wildfire_drought/`.
 - Model-specific preprocessing (if any) and why:
 

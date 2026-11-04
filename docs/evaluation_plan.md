@@ -1,7 +1,7 @@
 # Plan: shared target and evaluation protocol
 
 **Status:** shared pieces built (`shared/experiment.py`, `build_preprocessor()`,
-`evaluate_spread_rate()`, the `train.csv`/`validation.csv`/`test.csv` files, the template, `scripts/compare_models.py`).
+`evaluate_spread_rate()`, the `train.csv.gz`/`validation.csv.gz`/`test.csv.gz` files, the template, `scripts/compare_models.py`).
 Models and the baseline are not built yet.
 
 **Who builds what:** this plan covers only the shared pieces (data, split, features,
@@ -55,21 +55,34 @@ Why grouped:
   test, which leaks. Grouping by county + discovery date keeps each county-day in one
   file.
 
-The three splits are saved as `train.csv`, `validation.csv`, and `test.csv` in
-`data/processed/wildfire_drought/` and committed to Git, so every member pulls the exact
+The three splits are saved as `train.csv.gz`, `validation.csv.gz`, and `test.csv.gz` in
+`data/processed/wildfire_drought/` (gzip-compressed) and committed to Git, so every member pulls the exact
 same rows (each row keeps its `FOD_ID`). The same seed and data always give the same
 files.
 
 ## 3. Features
 
-Known at discovery time:
+Known at discovery time (42 features; the full list is in `shared/experiment.py`). Most
+come from FPA FOD-Attributes (Pourmohamad et al., 2024), joined by `FOD_ID`; column
+meanings are in that paper's Table S1.
 
 | Group | Columns |
 |---|---|
 | Location | `LATITUDE`, `LONGITUDE`, `STATE` |
 | Timing | `DISCOVERY_DOY`, discovery hour (from `DISCOVERY_TIME`) |
-| Weather on the discovery day | `PRECTOT`, `PS`, `QV2M`, `T2M`, `T2MDEW`, `T2MWET`, `T2M_MAX`, `T2M_MIN`, `T2M_RANGE`, `TS`, `WS10M`, `WS10M_MAX`, `WS10M_MIN`, `WS10M_RANGE`, `WS50M`, `WS50M_MAX`, `WS50M_MIN`, `WS50M_RANGE` |
-| Drought | `SCORE` |
+| Drought | `SCORE` (weekly county score) |
+| Terrain | `Elevation`, `Slope`, `TPI`, `TRI`, aspect (from `Aspect`, as sine/cosine plus a flat-ground flag) |
+| Vegetation | `Land_Cover` (category), `NDVI-1day` |
+| Weather at the ignition point on the discovery day (gridMET) | `pr`, `tmmn`, `tmmx`, `rmin`, `rmax`, `sph`, `vs`, `srad`, `vpd`, `erc`, `bi`, `fm100`, `fm1000`, wind direction (from `th`, as sine/cosine) |
+| How unusual the day was | `sph`, `vs`, `fm100`, `bi`, `vpd`, `erc` percentiles (text ranges like `"30-50%"`, turned into their midpoints) |
+| Response and people | `OWNER_DESCR`, `NWCG_REPORTING_AGENCY` (categories), fire stations within 10 and 20 km (empty = 0), `Population` |
+| Region | `Ecoregion_NA_L2CODE` (category) |
+
+The conversions happen in `add_derived_columns()`, which `predict()` also uses.
+
+The county weather columns (`PRECTOT`, `T2M`, `WS10M`, ...) are still in the files but
+not used as features: once the point weather was added, they made no difference on
+validation (see `docs/discussion_log.md`).
 
 Not allowed as features:
 
@@ -80,13 +93,17 @@ Not allowed as features:
 | `NWCG_CAUSE_CLASSIFICATION`, `NWCG_GENERAL_CAUSE`, `NWCG_CAUSE_AGE_CATEGORY` | The same for every row (all natural fires) |
 | `MATCH_METHOD`, `MATCH_DISTANCE_KM`, `SCORE_DATE` | Made by the merge, not facts about the fire |
 | `FIRE_YEAR`, `DISCOVERY_DATE` | The use case is future fires, whose year never appears in the training data |
+| FPA FOD-Attributes: `MTBS_*`, `ICS_209_PLUS_*` | Only exist for large fires (96% of class G vs 0% of class A have an MTBS ID), so they reveal the fire's size |
+| FPA FOD-Attributes: `*_5D_mean`, `*_5D_min`, `*_5D_max` | Averaged over 5 days centered on ignition, so they include days after discovery |
+| FPA FOD-Attributes: `tmmn_Percentile`, `tmmx_Percentile` | `">90%"` for every fire, so they carry no information |
 
 ## 4. Preprocessing (no leakage)
 
 A shared scikit-learn pipeline every model wraps around its estimator:
 - Numbers: fill missing values with the median (3,432 rows have no `DISCOVERY_TIME`),
   then scale.
-- `STATE`: one-hot encoding.
+- Categories (`STATE`, `Land_Cover`, `OWNER_DESCR`, `NWCG_REPORTING_AGENCY`,
+  `Ecoregion_NA_L2CODE`): one-hot encoding.
 
 It is fitted on training data only and then applied to validation and test data. The
 existing functions in `shared/preprocessing.py` compute their statistics on the whole

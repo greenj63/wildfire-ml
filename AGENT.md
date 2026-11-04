@@ -28,7 +28,7 @@ backend and React frontend.
 | Environment | **ONE `.venv` at the repo root.** No per-algorithm venvs, no per-algorithm requirements files |
 | Dependencies | One root `requirements.txt` (runtime) and `requirements-dev.txt` (ruff, pytest, pre-commit) |
 | Formatting/linting | **ruff**, run automatically on every commit via pre-commit |
-| Datasets | **Shared** across all algorithms, stored in `data/`, never committed to Git. **Exception:** `train.csv`, `validation.csv`, `test.csv` in `data/processed/wildfire_drought/` (the team experiment's split) are committed; `wildfire_drought.csv` there is not |
+| Datasets | **Shared** across all algorithms, stored in `data/`, never committed to Git. **Exception:** `train.csv.gz`, `validation.csv.gz`, `test.csv.gz` in `data/processed/wildfire_drought/` (the team experiment's split) are committed; `wildfire_drought.csv` there is not |
 | Saved models/metrics | Stored in `models/<algorithm_name>/`, never committed to Git |
 | Tests | Optional for now |
 | Experiment tracking | None. Each training run writes `metrics.json` |

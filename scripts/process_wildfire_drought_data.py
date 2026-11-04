@@ -7,6 +7,7 @@ Needs these files first (see data/README.md):
     data/processed/wildfire/wildfire_clean.csv
     data/processed/droughts/drought_clean.csv
     data/raw/county_centroids/2020_Gaz_counties_national.txt
+    data/raw/fpa_fod_plus/FPA_FOD_Plus.csv
 """
 
 import numpy as np
@@ -32,6 +33,30 @@ KM_PER_DEGREE = 111.32
 EARTH_RADIUS_KM = 6371.0
 DROUGHT_CHUNK_ROWS = 2_000_000
 FIRE_CHUNK_ROWS = 2_000
+
+# Columns taken from FPA FOD-Attributes (Pourmohamad et al., 2024), joined by FOD_ID.
+# All are known at discovery time. Left out on purpose: MTBS_* and ICS_209_PLUS_*
+# (only exist for large fires, so they leak size), *_5D_* (a 5-day window centered on
+# ignition, so it includes days after discovery), and the tmmn/tmmx percentiles
+# (">90%" for every fire). Column meanings: the paper's Table S1.
+PLUS_FILENAME = "FPA_FOD_Plus.csv"
+PLUS_COLUMNS = [
+    # Terrain
+    "Elevation", "Slope", "Aspect", "TPI", "TRI",
+    # Vegetation and land
+    "Land_Cover", "NDVI-1day",
+    # gridMET weather and fire danger at the ignition point, on the discovery day
+    "pr", "tmmn", "tmmx", "rmin", "rmax", "sph", "vs", "th", "srad", "vpd",
+    "erc", "bi", "fm100", "fm1000",
+    # How unusual the day was for that place (text ranges like "30-50%")
+    "sph_Percentile", "vs_Percentile", "fm100_Percentile", "bi_Percentile",
+    "vpd_Percentile", "erc_Percentile",
+    # Who responds, and region
+    "OWNER_DESCR", "NWCG_REPORTING_AGENCY",
+    "No_FireStation_10.0km", "No_FireStation_20.0km",
+    "Ecoregion_NA_L2CODE", "Population",
+]  # fmt: skip
+PLUS_CHUNK_ROWS = 500_000
 
 
 def load_fires() -> pd.DataFrame:
@@ -232,6 +257,32 @@ def limit_rows(df: pd.DataFrame) -> pd.DataFrame:
     return sample.sort_values("FOD_ID")
 
 
+def add_plus_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Attach the FPA FOD-Attributes columns to the sampled fires, matched by FOD_ID.
+
+    A left join: the few fires missing from that file keep empty values (filled with
+    the training median later), so the sample itself doesn't change.
+    """
+    path = get_dataset_dir("fpa_fod_plus") / PLUS_FILENAME
+    if not path.exists():
+        raise FileNotFoundError(f"Not found: {path}. See data/README.md.")
+    ids = set(df["FOD_ID"])
+    parts = [
+        chunk[chunk["FOD_ID"].isin(ids)]
+        for chunk in pd.read_csv(
+            path,
+            usecols=["FOD_ID"] + PLUS_COLUMNS,
+            chunksize=PLUS_CHUNK_ROWS,
+            low_memory=False,
+        )
+    ]
+    plus = pd.concat(parts)
+    merged = df.merge(plus, on="FOD_ID", how="left")
+    assert len(merged) == len(df)
+    print(f"{plus['FOD_ID'].nunique():,} of {len(df):,} fires found in {PLUS_FILENAME}")
+    return merged
+
+
 def main() -> None:
     print("Loading fires and county centers...")
     fires = load_fires()
@@ -266,6 +317,9 @@ def main() -> None:
     print(f"{len(df):,} matched fires have a spread rate")
 
     df = limit_rows(df)
+
+    print("Adding FPA FOD-Attributes columns...")
+    df = add_plus_columns(df)
 
     out_dir = get_dataset_dir(OUTPUT_NAME, processed=True)
     out_dir.mkdir(parents=True, exist_ok=True)

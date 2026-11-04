@@ -11,8 +11,8 @@ gains over the baseline and simpler models.
 
 ## Data
 Uses the shared experiment (`docs/evaluation_plan.md`): target `log(1 + SPREAD_RATE)`,
-features from `shared/experiment.py`, and the committed `train.csv` (79,961 rows),
-`validation.csv` (10,026), and `test.csv` (10,013) in
+features from `shared/experiment.py`, and the committed `train.csv.gz` (79,961 rows),
+`validation.csv.gz` (10,026), and `test.csv.gz` (10,013) in
 `data/processed/wildfire_drought/`.
 - Model-specific preprocessing: none. Only the shared pipeline (median fill, scaling,
   one-hot `STATE`). Trees don't need scaling, but it doesn't hurt them, and it keeps the
