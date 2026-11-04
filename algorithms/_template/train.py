@@ -45,10 +45,16 @@ def fit_and_score(seed, params, X_fit, y_fit, X_eval, y_eval):
 
 
 def summarize(runs: list[dict], part: str) -> dict:
-    """Mean and standard deviation of each metric across seeds."""
+    """Mean and standard deviation of each metric across seeds.
+
+    With one run (SEEDS = [0]) there is no spread between runs, so std is 0.
+    """
     table = pd.DataFrame([run[part] for run in runs])
     return {
-        metric: {"mean": float(table[metric].mean()), "std": float(table[metric].std())}
+        metric: {
+            "mean": float(table[metric].mean()),
+            "std": float(table[metric].std()) if len(table) > 1 else 0.0,
+        }
         for metric in table.columns
     }
 
