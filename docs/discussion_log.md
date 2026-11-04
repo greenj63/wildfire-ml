@@ -117,10 +117,65 @@ output was checked).
 - **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
 - **Decisions:**
   - Only `train.csv`, `validation.csv`, and `test.csv` are committed to Git, so members
-    just pull them and don't need to download raw data or run scripts.
+    just pull them and don't need to download raw data or run scripts. (Compressed to
+    `.csv.gz` in entry 12.)
   - Each member implements, tunes, and documents their own model from the template.
-    Claude Code built only shared code (data scripts, split, features, preprocessing,
-    metrics, template, comparison script) and implemented no models.
+    Claude Code built the shared code (data scripts, split, features, preprocessing,
+    metrics, template, comparison script). At Arlim's request it also applied tuning
+    changes to the LightGBM model and ran the error analyses.
+
+### 11. Separate datasets per fire lifetime (rejected)
+- **Date:** 2026-11-03 · **Participants:** `[add names]`, Claude Code
+- **Proposal:** Build five datasets (current; lifetime ≤ 2, 3–30, 31–90, ≥ 91 days) and
+  find the best model for each.
+- **Evidence:** Lifetime is only known after containment, so no model could be chosen
+  at prediction time (leakage), and it is part of the target (spread = acres ÷ days).
+  The ≥ 91-day group has only 300 training and 38 test fires.
+- **Decision:** Rejected. Instead, every model trains on the full data, and test errors
+  are broken down by lifetime group in the error analysis.
+
+### 12. Add FPA FOD-Attributes features (changed the dataset)
+- **Date:** 2026-11-03 to 2026-11-04 · **Participants:** Arlim Macaldo, team
+  `[add names]` (approved 2026-11-04), Claude Code
+- **Question:** Error analysis showed all models fail in the same places (fast fires,
+  certain states) and rely heavily on latitude/longitude. Would fuel, terrain, and
+  on-site weather help?
+- **Evidence:** FPA FOD-Attributes (Pourmohamad et al., 2024) matched 99,975 of our
+  100,000 fires by `FOD_ID`. Adding 35 of its columns, same fires and split, each model's
+  existing settings, improved every model on every validation metric: MAE −0.026
+  (LightGBM), −0.035 (random forest), −0.028 (KNN); R² +0.06 to +0.10. Leaky columns
+  were excluded (MTBS and ICS-209 IDs exist mostly for large fires; 5-day weather
+  windows include days after discovery).
+- **Decision:** Adopt the new columns. Split files rebuilt with the same fires and split,
+  and compressed (`.csv.gz`). Every model must be retuned and retrained.
+
+### 13. Which feature groups to keep
+- **Date:** 2026-11-04 · **Participants:** Arlim Macaldo, Claude Code
+- **Evidence (validation, removing one group at a time):** removing land owner and
+  reporting agency made every model worse (MAE +0.003 to +0.010). Removing our 18 county
+  weather columns made every model's MAE equal or better (−0.002 to −0.009), since the
+  point weather replaces them.
+- **Decision:** Keep owner and agency; drop the county weather from the features (still
+  in the files). Final set: 42 features.
+
+### 14. Removing implausible long-duration small fires (rejected)
+- **Date:** 2026-11-04 · **Participants:** Arlim Macaldo, Claude Code
+- **Hypothesis:** 2.2% of fires under 10 acres are recorded as lasting over 2 weeks
+  (likely late paperwork, not burning). Removing them from training might help.
+- **Evidence:** Removing them (two rules tested) made all four models slightly worse on
+  validation. These records turned out to be easy cases (near-zero spread, predicted as
+  near zero), not the source of the large errors on long fires.
+- **Decision:** Keep the training data as is; report the records as a data-quality
+  finding.
+
+### 15. Training goal: median vs mean
+- **Date:** 2026-11-04 · **Participants:** Arlim Macaldo, Claude Code
+- **Evidence (validation):** Switching random forest, KNN, and linear regression to
+  median-aiming versions cut MAE by 14–18%, but worsened R², fastest-10% error, and
+  fast-fire PR-AUC. LightGBM already aims at the median (`l1`).
+- **Decision:** `[add: the team's choice]`. Aim every model at the same thing so the
+  comparison stays fair: the median if MAE (typical fires) is the priority, the mean if
+  catching fast fires is.
 
 ---
 
@@ -133,3 +188,6 @@ output was checked).
 | One person trains every model at the end to make the final `results/comparison.csv` (recommended), or each member commits only their own results | `[add]` | `[add]` |
 | Use `FIRE_YEAR` as a feature? (excluded for now; allowed now that the split is random) | `[add]` | `[add]` |
 | Check the Kaggle drought dataset's license allows sharing derived data in the repo | `[add]` | `[add]` |
+| Training goal for every model: median (best MAE) or mean (best on fast fires)? (entry 15) | `[add]` | everyone |
+| Confirm in FPA FOD-Attributes Table S1: empty fire-station counts mean 0, and the date window of `NDVI-1day` | `[add]` | `[add]` |
+| Every member retunes and retrains on the new features (entry 12) | `[add]` | everyone |

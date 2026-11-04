@@ -10,7 +10,7 @@ be added later.
 |---|---|
 | `algorithms/` | One folder per algorithm. Copy `_template/` to start yours. |
 | `shared/` | Code used by 2+ algorithms (loading data, metrics, helpers). |
-| `data/` | Shared datasets (downloaded by you, NOT in Git), except the team's `train.csv`, `validation.csv`, and `test.csv` in `data/processed/wildfire_drought/`, which are committed. See `data/README.md`. |
+| `data/` | Shared datasets (downloaded by you, NOT in Git), except the team's `train.csv.gz`, `validation.csv.gz`, and `test.csv.gz` in `data/processed/wildfire_drought/`, which are committed. See `data/README.md`. |
 | `models/` | Saved trained models + `metrics.json` (NOT in Git). |
 | `backend/` | FastAPI app (placeholder for now). |
 | `frontend/` | React app (placeholder for now). |
