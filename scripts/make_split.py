@@ -1,5 +1,5 @@
 # scripts/make_split.py
-"""Write train.csv, validation.csv, and test.csv next to wildfire_drought.csv.
+"""Write train.csv.gz, validation.csv.gz, and test.csv.gz next to wildfire_drought.csv.
 
 The files are committed, so normally nobody needs to run this. Only run it if the
 combined dataset changes, and tell the group (every model must be re-run). The seed is
