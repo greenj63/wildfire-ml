@@ -1,0 +1,237 @@
+{
+  "algorithm": "huber-regression",
+  "member": "Jack Greene",
+  "target": "LOG_SPREAD_RATE",
+  "split": "random ~80/10/10 split, county-days kept together (GroupShuffleSplit, seed 42); files in data/processed/wildfire_drought/",
+  "split_sizes": {
+    "train": 79961,
+    "validation": 10026,
+    "test": 10013
+  },
+  "param_grid": {
+    "epsilon": [
+      1.0,
+      1.1,
+      1.15,
+      1.25,
+      1.35
+    ],
+    "alpha": [
+      1e-06,
+      0.0001,
+      0.01,
+      1
+    ]
+  },
+  "search": [
+    {
+      "params": {
+        "alpha": 1e-06,
+        "epsilon": 1.0
+      },
+      "validation_mae": 0.5909607757371711
+    },
+    {
+      "params": {
+        "alpha": 1e-06,
+        "epsilon": 1.1
+      },
+      "validation_mae": 0.590603418302197
+    },
+    {
+      "params": {
+        "alpha": 1e-06,
+        "epsilon": 1.15
+      },
+      "validation_mae": 0.5909950623064868
+    },
+    {
+      "params": {
+        "alpha": 1e-06,
+        "epsilon": 1.25
+      },
+      "validation_mae": 0.5923492352296638
+    },
+    {
+      "params": {
+        "alpha": 1e-06,
+        "epsilon": 1.35
+      },
+      "validation_mae": 0.5951989138582385
+    },
+    {
+      "params": {
+        "alpha": 0.0001,
+        "epsilon": 1.0
+      },
+      "validation_mae": 0.5909030368574683
+    },
+    {
+      "params": {
+        "alpha": 0.0001,
+        "epsilon": 1.1
+      },
+      "validation_mae": 0.59054498224908
+    },
+    {
+      "params": {
+        "alpha": 0.0001,
+        "epsilon": 1.15
+      },
+      "validation_mae": 0.5910401389061518
+    },
+    {
+      "params": {
+        "alpha": 0.0001,
+        "epsilon": 1.25
+      },
+      "validation_mae": 0.5924514679110321
+    },
+    {
+      "params": {
+        "alpha": 0.0001,
+        "epsilon": 1.35
+      },
+      "validation_mae": 0.5952281636535817
+    },
+    {
+      "params": {
+        "alpha": 0.01,
+        "epsilon": 1.0
+      },
+      "validation_mae": 0.5909264118002701
+    },
+    {
+      "params": {
+        "alpha": 0.01,
+        "epsilon": 1.1
+      },
+      "validation_mae": 0.5906466926951678
+    },
+    {
+      "params": {
+        "alpha": 0.01,
+        "epsilon": 1.15
+      },
+      "validation_mae": 0.5908438454091315
+    },
+    {
+      "params": {
+        "alpha": 0.01,
+        "epsilon": 1.25
+      },
+      "validation_mae": 0.5922380129233079
+    },
+    {
+      "params": {
+        "alpha": 0.01,
+        "epsilon": 1.35
+      },
+      "validation_mae": 0.5950626470943138
+    },
+    {
+      "params": {
+        "alpha": 1,
+        "epsilon": 1.0
+      },
+      "validation_mae": 0.590943369054717
+    },
+    {
+      "params": {
+        "alpha": 1,
+        "epsilon": 1.1
+      },
+      "validation_mae": 0.5907442884982294
+    },
+    {
+      "params": {
+        "alpha": 1,
+        "epsilon": 1.15
+      },
+      "validation_mae": 0.5910682389507266
+    },
+    {
+      "params": {
+        "alpha": 1,
+        "epsilon": 1.25
+      },
+      "validation_mae": 0.5922510936905937
+    },
+    {
+      "params": {
+        "alpha": 1,
+        "epsilon": 1.35
+      },
+      "validation_mae": 0.5954467499595796
+    }
+  ],
+  "best_params": {
+    "alpha": 0.0001,
+    "epsilon": 1.1
+  },
+  "seeds": [
+    0
+  ],
+  "runs": [
+    {
+      "seed": 0,
+      "validation": {
+        "mae": 0.59054498224908,
+        "rmse": 1.2841952692819343,
+        "r2": 0.09820559716209354,
+        "mae_top10": 3.369031335306325
+      },
+      "test": {
+        "mae": 0.6216054248784595,
+        "rmse": 1.3245699121094603,
+        "r2": 0.08038399701271604,
+        "mae_top10": 3.5015999307345544
+      },
+      "fit_seconds": 14.319783400278538
+    }
+  ],
+  "validation": {
+    "mae": {
+      "mean": 0.59054498224908,
+      "std": NaN
+    },
+    "rmse": {
+      "mean": 1.2841952692819343,
+      "std": NaN
+    },
+    "r2": {
+      "mean": 0.09820559716209354,
+      "std": NaN
+    },
+    "mae_top10": {
+      "mean": 3.369031335306325,
+      "std": NaN
+    }
+  },
+  "test": {
+    "mae": {
+      "mean": 0.6216054248784595,
+      "std": NaN
+    },
+    "rmse": {
+      "mean": 1.3245699121094603,
+      "std": NaN
+    },
+    "r2": {
+      "mean": 0.08038399701271604,
+      "std": NaN
+    },
+    "mae_top10": {
+      "mean": 3.5015999307345544,
+      "std": NaN
+    }
+  },
+  "fit_seconds_mean": 14.319783400278538,
+  "versions": {
+    "python": "3.13.15",
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "joblib": "1.6.0"
+  }
+}
