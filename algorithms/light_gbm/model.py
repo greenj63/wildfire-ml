@@ -12,6 +12,9 @@ MEMBER = "Arlim Macaldo"
 # Stage 2: objective, min_child_samples, and 500 trees are fixed below. num_leaves and
 # learning_rate were at the top of their stage 1 ranges, so the search goes higher,
 # and row/feature sampling is added.
+#
+# Stage 3: the same grid, rerun on the 42-feature dataset. Best: num_leaves 63,
+# learning_rate 0.05, subsample 1.0, colsample_bytree 0.8 (validation MAE 0.5411).
 PARAM_GRID = {
     "num_leaves": [63, 127],  # tree complexity
     "learning_rate": [0.05, 0.1],  # step size per tree

@@ -19,18 +19,27 @@ the training split only (and on train+validation when fitting the final model).
 
 ## Model choice and experiment
 
-- Scikit-learn `KNeighborsRegressor`.
-- Hyperparameters tuned with shared **validation MAE on log scale**:
+- Custom `MedianKNNRegressor` built using scikit-learn's nearest-neighbor search.
+- Predicts the median of neighboring target values, using either uniform or distance-weighted aggregation.
+- Hyperparameters tuned using shared **validation MAE on log scale**:
   `n_neighbors` in `[5, 15, 31]`; `weights` in `[uniform, distance]`.
-- Shared `train.py` selects one setting on validation, then refits on training
+
+- Shared `algorithms/knn/train.py` selects one setting on validation, then refits on training
   plus validation and evaluates once on the team's unchanged held-out test set.
 - Primary metric: MAE on log scale. Supporting: RMSE, R², and MAE for the top
   10% fastest-spreading fires. `shared/evaluation.py` implements these.
 - KNN is deterministic for a fixed dataset and hyperparameter choice, so a
   single seed (`0`) is used. There is no run-to-run stochastic variability.
 - Nearest-neighbor search can be computationally costly for the full training
-  set. Keep the training data and shared test rows unchanged for comparisons;
+  set. 
+- Keep the training data and shared test rows unchanged for comparisons;
   document any future compute-driven modification.
+  - **Best validation setting:** `n_neighbors=31`, `weights="distance"`.
+- **Validation MAE:** 0.5767 on the updated 42-feature dataset.
+- Previous mean-based KNN validation MAE: 0.6729.
+- The median-based model reduced validation MAE by approximately 14.3%.
+
+- **Final test results:** Pending the team's standardized evaluation.
 
 ## Commands (from **repository root**)
 
