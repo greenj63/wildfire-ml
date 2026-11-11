@@ -93,6 +93,10 @@ Mean ± standard deviation across 5 seeds. MAE and RMSE are on the log scale.
 fastest-10% MAE 4.257): LightGBM is **20.5% lower on MAE** and **30.8% lower on the
 fastest fires**.
 
+**Compared with the other models** (test MAE, `results/comparison.csv`): random forest
+0.579, KNN 0.606, Huber regression 0.622, baseline 0.711. LightGBM is lowest on MAE, and
+ties the random forest on the fastest 10% of fires (2.947 vs 2.948).
+
 **Compared with the original 24 features** (same model, same search):
 
 | Test metric | Original features | Current features | Change |
@@ -105,7 +109,8 @@ fastest fires**.
 
 ## Notes
 Error analysis on the test set, using the final model (seed 0, trained on train +
-validation).
+validation). `python -m scripts.error_analysis` reproduces the fast-fire ranking,
+lifetime, size, and state numbers below for every model (`results/error_analysis*.csv`).
 
 - **Detecting fast fires** (spread ≥ 11 acres/day, 10.7% of test fires): ranking is
   good (ROC-AUC 0.837, PR-AUC 0.443 vs 0.107 by chance). Taken at face value, the
@@ -131,6 +136,10 @@ validation).
   longitude 15.3%, latitude 7.8%, state 4.2%, elevation 4.1%, discovery hour 3.6%,
   ecoregion 3.4%, minimum humidity 3.0%, day of year 3.0%, population 2.6%, land owner
   2.6%, precipitation 2.6%, solar radiation 2.5%. Location still matters most.
-- **Ideas:** a `huber` or `l2` objective, or a lower alert cut-off, would catch more fast
-  fires at the cost of overall MAE. The team's median-vs-mean decision
-  (`docs/discussion_log.md`, entry 15) applies here too.
+- **Median goal:** the `l1` objective aims at the median, which is the team's decision
+  for every model because the target is skewed (`docs/discussion_log.md`, entry 15).
+  The cost is the weak fast-fire result above.
+- **Ideas:** a lower alert cut-off would catch more fast fires, at the cost of more
+  false alarms. A `huber` or `l2` objective would also help fast fires, but it moves the
+  model away from the team's median goal and raises overall MAE (stage 1: `huber`
+  0.6115, `l2` 0.6790, `l1` 0.5706 on the original features).

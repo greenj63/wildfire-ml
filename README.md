@@ -1,8 +1,12 @@
-# ML Platform
+# Wildfire spread-rate prediction (CS 422)
 
-A class project: several machine learning algorithms (one per contributor) in one
-repo, sharing datasets and utility code. A FastAPI backend and React frontend will
-be added later.
+A class project: several machine learning algorithms (one per contributor) compared on
+one shared problem: predicting how fast a newly reported wildfire will spread
+(`log(1 + acres per day)`) from what is known when it is discovered. All models share
+one target, feature set, split, and metrics. To reproduce the main comparison, see
+[REPRODUCE.md](REPRODUCE.md). The shared protocol is in `docs/evaluation_plan.md`, and
+the team's decisions are in `docs/discussion_log.md`. A FastAPI backend and React
+frontend may be added later.
 
 ## Folder map
 
@@ -12,6 +16,8 @@ be added later.
 | `shared/` | Code used by 2+ algorithms (loading data, metrics, helpers). |
 | `data/` | Shared datasets (downloaded by you, NOT in Git), except the team's `train.csv.gz`, `validation.csv.gz`, and `test.csv.gz` in `data/processed/wildfire_drought/`, which are committed. See `data/README.md`. |
 | `models/` | Saved trained models + `metrics.json` (NOT in Git). |
+| `results/` | The team comparison table and each model's metrics (committed). |
+| `scripts/` | Data building, the split, the comparison table, and the error analysis. |
 | `backend/` | FastAPI app (placeholder for now). |
 | `frontend/` | React app (placeholder for now). |
 | `tests/` | Optional tests. |
@@ -100,8 +106,9 @@ Then edit the 4 files inside (see the comments marked `TODO`). Use
 
 ## File Structure of the repo
 ```
-ml-platform/
+wildfire-ml/
 ├── README.md                    # Setup + how to run (start here)
+├── REPRODUCE.md                 # Steps to reproduce the main comparison
 ├── CONTRIBUTING.md              # Beginner Git guide + 5 rules
 ├── .python-version              # Contains: 3.12
 ├── pyproject.toml               # Ruff settings (formatting/linting rules)
@@ -144,8 +151,9 @@ ml-platform/
 │   └── README.md
 │
 ├── tests/                       # Optional for now
-├── docs/
-├── scripts/
+├── results/                     # comparison.csv, error_analysis.*, metrics/<model>.json
+├── docs/                        # evaluation plan, discussion log, merge plan
+├── scripts/                     # data building, split, compare_models, error_analysis
 │   └── setup.sh                 # Optional one-command setup
 └── .github/
     └── pull_request_template.md

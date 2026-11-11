@@ -3,6 +3,9 @@
 
 Run after training (from the repo root):  python -m scripts.compare_models
 
+Reads models/<name>/metrics.json where it exists, and the committed
+results/metrics/<name>.json for every other model.
+
 Writes (both committed, so the results can be checked without re-training):
     results/comparison.csv           one row per model, validation and test separate
     results/metrics/<model>.json     each model's full settings and results
@@ -24,13 +27,22 @@ def main() -> None:
     copies_dir = results_dir / "metrics"
     copies_dir.mkdir(parents=True, exist_ok=True)
 
-    rows = []
+    # Start from the committed copies, so a model a teammate trained (and committed)
+    # still appears when its models/ folder isn't on this computer. A locally trained
+    # models/<name>/metrics.json replaces the committed copy of the same model.
+    sources = {p.stem: p for p in sorted(copies_dir.glob("*.json"))}
     for path in sorted((root / "models").glob("*/metrics.json")):
+        sources[path.parent.name] = path
+
+    rows = []
+    for path in (sources[name] for name in sorted(sources)):
         metrics = json.loads(path.read_text())
         if "test" not in metrics or "mae" not in metrics["test"]:
             print(f"Skipping {path} (not from the shared train.py)")
             continue
-        shutil.copy(path, copies_dir / f"{metrics['algorithm']}.json")
+        committed_copy = copies_dir / f"{metrics['algorithm']}.json"
+        if path != committed_copy:
+            shutil.copy(path, committed_copy)
 
         row = {
             "model": metrics["algorithm"],

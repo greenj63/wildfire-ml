@@ -52,3 +52,23 @@ differences between fires.
   models.
 - Validation is easier than test for every model, including this one (0.681 vs 0.711),
   so the gap between them isn't a sign of overfitting.
+
+## Error analysis
+Test set (10,013 fires), from `python -m scripts.error_analysis` (full tables in
+`results/error_analysis.csv` and `results/error_analysis_summary.csv`). The model is the
+final one, refit on train + validation. A fast fire spreads at least 11 acres/day (10.7%
+of test fires). The group labels (lifetime, size class) are only used to slice the
+errors; they are not features.
+
+- **Fastest fires:** the 10% fastest test fires have an actual median of 52.35 acres/day.
+  The baseline predicts 0.1 for every one of them (100% underpredicted). It has no
+  ranking, so ROC-AUC, PR-AUC, and alerting are not defined for it.
+- **By fire size class** (test MAE): A 0.030, B 0.635, C 2.552, D 3.844, E 4.439, F 5.463,
+  G 6.781. It is the *best* model on the tiniest fires (class A, 56% of the test set),
+  where 0.1 acres/day is almost exactly right, and the worst on everything larger.
+- **By fire lifetime** (test MAE): 1–2 days 0.590, 3–30 days 1.116, 31–90 days 1.375,
+  91+ days 1.980 (38 fires). It is the best model for 91+ day fires: the learned models
+  score 1.99 to 2.07 there.
+- **By state** (states with 200+ test fires): lowest in New York (0.28), Colorado
+  (0.31), and Washington (0.36); highest in Florida (1.41), Georgia (1.25), and Wyoming
+  (1.02).

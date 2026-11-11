@@ -164,7 +164,8 @@ cp -r algorithms/_template algorithms/my_algorithm   # Windows: copy the folder 
 python -m algorithms.my_algorithm.train
 python -m algorithms.my_algorithm.predict
 
-# team comparison table (results/comparison.csv)
+# team comparison table (results/comparison.csv); uses models/<name>/metrics.json if
+# trained locally, else the committed results/metrics/<name>.json
 python -m scripts.compare_models
 
 # optional

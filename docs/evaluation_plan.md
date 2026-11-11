@@ -2,7 +2,8 @@
 
 **Status:** shared pieces built (`shared/experiment.py`, `build_preprocessor()`,
 `evaluate_spread_rate()`, the `train.csv.gz`/`validation.csv.gz`/`test.csv.gz` files, the template, `scripts/compare_models.py`).
-Models and the baseline are not built yet.
+The baseline and four models are built and trained on the 42-feature dataset
+(`results/comparison.csv`).
 
 **Who builds what:** this plan covers only the shared pieces (data, split, features,
 preprocessing, metrics, template, comparison script). Each member implements, tunes,
@@ -123,8 +124,8 @@ Model-specific preprocessing is allowed when the model's README explains why.
 ## 6. Baseline
 
 `algorithms/baseline/`: always predicts the training median (the best constant for MAE).
-Every other model is compared against it. A team member builds it like any other model,
-from the template.
+Every other model is compared against it. It was built like any other model, from the
+template (owner: Arlim Macaldo). It has no randomness, so it runs once (`SEEDS = [0]`).
 
 ## 7. Training workflow (template `train.py`)
 
@@ -141,7 +142,9 @@ and test scores for each seed, and package versions.
 ## 8. Comparison
 
 `scripts/compare_models.py` reads every model's `metrics.json` and writes
-`results/comparison.csv`:
+`results/comparison.csv`. It uses `models/<name>/metrics.json` when it exists on your
+computer, and the committed copy in `results/metrics/<name>.json` for every other model,
+so a teammate's committed results are never dropped from the table:
 - One row per model: model, responsible member, validation and test results labeled
   separately, mean ± standard deviation across seeds.
 - Includes the baseline.

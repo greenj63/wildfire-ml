@@ -173,9 +173,14 @@ output was checked).
 - **Evidence (validation):** Switching random forest, KNN, and linear regression to
   median-aiming versions cut MAE by 14–18%, but worsened R², fastest-10% error, and
   fast-fire PR-AUC. LightGBM already aims at the median (`l1`).
-- **Decision:** `[add: the team's choice]`. Aim every model at the same thing so the
-  comparison stays fair: the median if MAE (typical fires) is the priority, the mean if
-  catching fast fires is.
+- **Decision:** Aim every model at the **median**, because the target is skewed (about
+  62% of fires spread 0.25 acres/day or less) and the primary metric is MAE. This keeps
+  the comparison fair: all models aim at the same thing. The cost, shown in the evidence,
+  is worse R², fastest-10% error, and fast-fire PR-AUC, which the report must state.
+  Reported by Arlim Macaldo; `[add date and who agreed]`.
+- **Action:** Random forest (`absolute_error` criterion), KNN (median of neighbors), and
+  LightGBM (`l1`) aim at the median. Huber regression is closer to median than mean
+  regression but is not a pure median model; its README says so.
 
 ---
 
@@ -183,11 +188,11 @@ output was checked).
 
 | Item | Decision | Owner |
 |---|---|---|
-| Who builds the baseline (training median) | `[add]` | `[add]` |
-| Which algorithm each member takes, and what each comparison shows | `[add]` | everyone |
-| One person trains every model at the end to make the final `results/comparison.csv` (recommended), or each member commits only their own results | `[add]` | `[add]` |
+| Who builds the baseline (training median) | Done: `algorithms/baseline/` | Arlim Macaldo |
+| Which algorithm each member takes, and what each comparison shows | Taken: LightGBM (Arlim), median KNN (Vincent), random forest (Erick), Huber regression (Jack). `[add: what each comparison shows]` | everyone |
+| One person trains every model at the end to make the final `results/comparison.csv` (recommended), or each member commits only their own results | Partly settled: `compare_models.py` now merges each member's committed `results/metrics/<name>.json`, so members can commit only their own results. `[add: whether one person reruns everything before submission]` | `[add]` |
 | Use `FIRE_YEAR` as a feature? (excluded for now; allowed now that the split is random) | `[add]` | `[add]` |
 | Check the Kaggle drought dataset's license allows sharing derived data in the repo | `[add]` | `[add]` |
-| Training goal for every model: median (best MAE) or mean (best on fast fires)? (entry 15) | `[add]` | everyone |
+| Training goal for every model: median (best MAE) or mean (best on fast fires)? (entry 15) | Median (decided; see entry 15) | everyone |
 | Confirm in FPA FOD-Attributes Table S1: empty fire-station counts mean 0, and the date window of `NDVI-1day` | `[add]` | `[add]` |
-| Every member retunes and retrains on the new features (entry 12) | `[add]` | everyone |
+| Every member retunes and retrains on the new features (entry 12) | Done for all four models. Huber and KNN ran one seed (std not meaningful); LightGBM and random forest ran five. `[add: rerun Huber and KNN with more seeds, or explain the single run in the report]` | everyone |
