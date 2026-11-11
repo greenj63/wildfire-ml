@@ -1,0 +1,84 @@
+{
+  "algorithm": "baseline",
+  "member": "Arlim Macaldo",
+  "target": "LOG_SPREAD_RATE",
+  "split": "random ~80/10/10 split, county-days kept together (GroupShuffleSplit, seed 42); files in data/processed/wildfire_drought/",
+  "split_sizes": {
+    "train": 79961,
+    "validation": 10026,
+    "test": 10013
+  },
+  "param_grid": {},
+  "search": [
+    {
+      "params": {},
+      "validation_mae": 0.6813543654334133
+    }
+  ],
+  "best_params": {},
+  "seeds": [
+    0
+  ],
+  "runs": [
+    {
+      "seed": 0,
+      "validation": {
+        "mae": 0.6813543654334133,
+        "rmse": 1.5019442110071666,
+        "r2": -0.23353934582560498,
+        "mae_top10": 4.148919201533837
+      },
+      "test": {
+        "mae": 0.7106329685568893,
+        "rmse": 1.540996061341997,
+        "r2": -0.24468600401666496,
+        "mae_top10": 4.257062660873355
+      },
+      "fit_seconds": 0.24928799999179319
+    }
+  ],
+  "validation": {
+    "mae": {
+      "mean": 0.6813543654334133,
+      "std": 0.0
+    },
+    "rmse": {
+      "mean": 1.5019442110071666,
+      "std": 0.0
+    },
+    "r2": {
+      "mean": -0.23353934582560498,
+      "std": 0.0
+    },
+    "mae_top10": {
+      "mean": 4.148919201533837,
+      "std": 0.0
+    }
+  },
+  "test": {
+    "mae": {
+      "mean": 0.7106329685568893,
+      "std": 0.0
+    },
+    "rmse": {
+      "mean": 1.540996061341997,
+      "std": 0.0
+    },
+    "r2": {
+      "mean": -0.24468600401666496,
+      "std": 0.0
+    },
+    "mae_top10": {
+      "mean": 4.257062660873355,
+      "std": 0.0
+    }
+  },
+  "fit_seconds_mean": 0.24928799999179319,
+  "versions": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "joblib": "1.6.0"
+  }
+}

@@ -58,10 +58,17 @@ def get_versions() -> dict:
     import pandas as pd
     import sklearn
 
-    return {
+    versions = {
         "python": platform.python_version(),
         "numpy": np.__version__,
         "pandas": pd.__version__,
         "scikit-learn": sklearn.__version__,
         "joblib": joblib.__version__,
     }
+    try:  # only models that use LightGBM need it installed
+        import lightgbm
+
+        versions["lightgbm"] = lightgbm.__version__
+    except ImportError:
+        pass
+    return versions

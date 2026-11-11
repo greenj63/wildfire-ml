@@ -1,0 +1,126 @@
+model,breakdown,group,n,mae
+baseline,fire lifetime,1-2 days,7871,0.5899825601714132
+baseline,fire lifetime,3-30 days,1917,1.1160389166003108
+baseline,fire lifetime,31-90 days,187,1.3750491341303657
+baseline,fire lifetime,91+ days,38,1.9798524169938088
+baseline,fire size class,A,5592,0.030059836948722725
+baseline,fire size class,B,2968,0.6346200485522152
+baseline,fire size class,C,847,2.5518851392226205
+baseline,fire size class,D,209,3.8442279843403466
+baseline,fire size class,E,166,4.438826358669906
+baseline,fire size class,F,155,5.463206552517387
+baseline,fire size class,G,76,6.781426960681688
+baseline,state,AZ,964,0.42954410947769883
+baseline,state,CA,753,0.37028348092099783
+baseline,state,CO,857,0.30986519840080434
+baseline,state,FL,712,1.4136080396652186
+baseline,state,GA,217,1.2474753807152907
+baseline,state,ID,652,0.7762700672725846
+baseline,state,MT,666,0.7760738117292998
+baseline,state,NM,708,0.7310868948786284
+baseline,state,NV,490,0.9825229574758233
+baseline,state,NY,334,0.2824297065185948
+baseline,state,OR,1215,0.40511735714508196
+baseline,state,UT,810,0.4097680081379376
+baseline,state,WA,319,0.3573171636518642
+baseline,state,WY,286,1.021325421070649
+huber-regression,fire lifetime,1-2 days,7871,0.49997844589692314
+huber-regression,fire lifetime,3-30 days,1917,1.0218883994594945
+huber-regression,fire lifetime,31-90 days,187,1.3506176636745688
+huber-regression,fire lifetime,91+ days,38,2.0136178402995135
+huber-regression,fire size class,A,5592,0.12222070221704907
+huber-regression,fire size class,B,2968,0.4698472107219979
+huber-regression,fire size class,C,847,1.911574883606846
+huber-regression,fire size class,D,209,3.1160167108497583
+huber-regression,fire size class,E,166,3.8131527483295726
+huber-regression,fire size class,F,155,4.891684583843681
+huber-regression,fire size class,G,76,6.366616007044116
+huber-regression,state,AZ,964,0.42413030638110044
+huber-regression,state,CA,753,0.3725565010875714
+huber-regression,state,CO,857,0.31832904457129296
+huber-regression,state,FL,712,1.0888261221520488
+huber-regression,state,GA,217,1.0408406877671172
+huber-regression,state,ID,652,0.7641062782921194
+huber-regression,state,MT,666,0.683898042878173
+huber-regression,state,NM,708,0.6475665850540797
+huber-regression,state,NV,490,0.9784474493189171
+huber-regression,state,NY,334,0.2911138900605986
+huber-regression,state,OR,1215,0.40428768623933187
+huber-regression,state,UT,810,0.4162740200223404
+huber-regression,state,WA,319,0.3614769309417246
+huber-regression,state,WY,286,0.8979760512869384
+knn,fire lifetime,1-2 days,7871,0.48471118547941067
+knn,fire lifetime,3-30 days,1917,1.0026719608492716
+knn,fire lifetime,31-90 days,187,1.3506378081393338
+knn,fire lifetime,91+ days,38,1.992543611619427
+knn,fire size class,A,5592,0.10389396383522531
+knn,fire size class,B,2968,0.4892915482911921
+knn,fire size class,C,847,1.8420889913640615
+knn,fire size class,D,209,3.1073283918803694
+knn,fire size class,E,166,3.694076088580448
+knn,fire size class,F,155,4.7767009197508505
+knn,fire size class,G,76,6.1722522798836525
+knn,state,AZ,964,0.42784861964753385
+knn,state,CA,753,0.3675010617627242
+knn,state,CO,857,0.3008868342755919
+knn,state,FL,712,1.0790941724395513
+knn,state,GA,217,1.0006604383671662
+knn,state,ID,652,0.6962422179415112
+knn,state,MT,666,0.6578698112134858
+knn,state,NM,708,0.64662452198681
+knn,state,NV,490,0.9547644389649119
+knn,state,NY,334,0.25390927910993216
+knn,state,OR,1215,0.3939808041931918
+knn,state,UT,810,0.40973996272093405
+knn,state,WA,319,0.35689136472387656
+knn,state,WY,286,0.9004377620024259
+light_gbm,fire lifetime,1-2 days,7871,0.4571673168212909
+light_gbm,fire lifetime,3-30 days,1917,0.9009591372403845
+light_gbm,fire lifetime,31-90 days,187,1.3323832751050675
+light_gbm,fire lifetime,91+ days,38,2.0407255160072224
+light_gbm,fire size class,A,5592,0.12854423316676522
+light_gbm,fire size class,B,2968,0.4786789874509995
+light_gbm,fire size class,C,847,1.6319984169919892
+light_gbm,fire size class,D,209,2.575076263530195
+light_gbm,fire size class,E,166,3.2508247755418664
+light_gbm,fire size class,F,155,4.07676169879723
+light_gbm,fire size class,G,76,5.5347197091639
+light_gbm,state,AZ,964,0.4127956278167344
+light_gbm,state,CA,753,0.3722833812792061
+light_gbm,state,CO,857,0.29874913549902976
+light_gbm,state,FL,712,0.9910918250256314
+light_gbm,state,GA,217,0.9486940337437049
+light_gbm,state,ID,652,0.6153675394282838
+light_gbm,state,MT,666,0.5782829598317678
+light_gbm,state,NM,708,0.5798716329331417
+light_gbm,state,NV,490,0.8452836172678937
+light_gbm,state,NY,334,0.24320448911232884
+light_gbm,state,OR,1215,0.3608551297277937
+light_gbm,state,UT,810,0.4072328911627552
+light_gbm,state,WA,319,0.36170937136569015
+light_gbm,state,WY,286,0.799655062675906
+random_forest,fire lifetime,1-2 days,7871,0.4706758420190136
+random_forest,fire lifetime,3-30 days,1917,0.9265112548408356
+random_forest,fire lifetime,31-90 days,187,1.3082764370564084
+random_forest,fire lifetime,91+ days,38,2.068552597138007
+random_forest,fire size class,A,5592,0.14399220457960882
+random_forest,fire size class,B,2968,0.5011855303846431
+random_forest,fire size class,C,847,1.584404606414149
+random_forest,fire size class,D,209,2.6051295912981476
+random_forest,fire size class,E,166,3.271391458892212
+random_forest,fire size class,F,155,4.216254745753065
+random_forest,fire size class,G,76,5.635631635652737
+random_forest,state,AZ,964,0.4257478468563762
+random_forest,state,CA,753,0.3681011864387395
+random_forest,state,CO,857,0.3031555519642546
+random_forest,state,FL,712,0.9920033789353667
+random_forest,state,GA,217,0.9519504459724774
+random_forest,state,ID,652,0.6860988035957837
+random_forest,state,MT,666,0.5961502891599739
+random_forest,state,NM,708,0.5793792200023431
+random_forest,state,NV,490,0.9202014084137828
+random_forest,state,NY,334,0.24578744894988458
+random_forest,state,OR,1215,0.37268725173902667
+random_forest,state,UT,810,0.4084437940831503
+random_forest,state,WA,319,0.38521545831242177
+random_forest,state,WY,286,0.8209344389050712

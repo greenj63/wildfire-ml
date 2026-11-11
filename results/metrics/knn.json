@@ -1,0 +1,135 @@
+{
+  "algorithm": "knn",
+  "member": "Vincent Chen",
+  "target": "LOG_SPREAD_RATE",
+  "split": "random ~80/10/10 split, county-days kept together (GroupShuffleSplit, seed 42); files in data/processed/wildfire_drought/",
+  "split_sizes": {
+    "train": 79961,
+    "validation": 10026,
+    "test": 10013
+  },
+  "param_grid": {
+    "n_neighbors": [
+      5,
+      15,
+      31
+    ],
+    "weights": [
+      "uniform",
+      "distance"
+    ]
+  },
+  "search": [
+    {
+      "params": {
+        "n_neighbors": 5,
+        "weights": "uniform"
+      },
+      "validation_mae": 0.6130177658167454
+    },
+    {
+      "params": {
+        "n_neighbors": 5,
+        "weights": "distance"
+      },
+      "validation_mae": 0.6125445314715002
+    },
+    {
+      "params": {
+        "n_neighbors": 15,
+        "weights": "uniform"
+      },
+      "validation_mae": 0.5785212936095805
+    },
+    {
+      "params": {
+        "n_neighbors": 15,
+        "weights": "distance"
+      },
+      "validation_mae": 0.5775133022121955
+    },
+    {
+      "params": {
+        "n_neighbors": 31,
+        "weights": "uniform"
+      },
+      "validation_mae": 0.5774032096469389
+    },
+    {
+      "params": {
+        "n_neighbors": 31,
+        "weights": "distance"
+      },
+      "validation_mae": 0.5767291496600464
+    }
+  ],
+  "best_params": {
+    "n_neighbors": 31,
+    "weights": "distance"
+  },
+  "seeds": [
+    0
+  ],
+  "runs": [
+    {
+      "seed": 0,
+      "validation": {
+        "mae": 0.5767291496600464,
+        "rmse": 1.2779629151156358,
+        "r2": 0.10693739089563115,
+        "mae_top10": 3.3151172358763645
+      },
+      "test": {
+        "mae": 0.6057694813961939,
+        "rmse": 1.3074265596424945,
+        "r2": 0.10403435973247233,
+        "mae_top10": 3.402562363713442
+      },
+      "fit_seconds": 0.2557967079919763
+    }
+  ],
+  "validation": {
+    "mae": {
+      "mean": 0.5767291496600464,
+      "std": 0.0
+    },
+    "rmse": {
+      "mean": 1.2779629151156358,
+      "std": 0.0
+    },
+    "r2": {
+      "mean": 0.10693739089563115,
+      "std": 0.0
+    },
+    "mae_top10": {
+      "mean": 3.3151172358763645,
+      "std": 0.0
+    }
+  },
+  "test": {
+    "mae": {
+      "mean": 0.6057694813961939,
+      "std": 0.0
+    },
+    "rmse": {
+      "mean": 1.3074265596424945,
+      "std": 0.0
+    },
+    "r2": {
+      "mean": 0.10403435973247233,
+      "std": 0.0
+    },
+    "mae_top10": {
+      "mean": 3.402562363713442,
+      "std": 0.0
+    }
+  },
+  "fit_seconds_mean": 0.2557967079919763,
+  "versions": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "joblib": "1.6.0"
+  }
+}

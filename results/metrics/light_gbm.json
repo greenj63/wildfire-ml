@@ -1,0 +1,314 @@
+{
+  "algorithm": "light_gbm",
+  "member": "Arlim Macaldo",
+  "target": "LOG_SPREAD_RATE",
+  "split": "random ~80/10/10 split, county-days kept together (GroupShuffleSplit, seed 42); files in data/processed/wildfire_drought/",
+  "split_sizes": {
+    "train": 79961,
+    "validation": 10026,
+    "test": 10013
+  },
+  "param_grid": {
+    "num_leaves": [
+      63,
+      127
+    ],
+    "learning_rate": [
+      0.05,
+      0.1
+    ],
+    "subsample": [
+      0.8,
+      1.0
+    ],
+    "colsample_bytree": [
+      0.8,
+      1.0
+    ]
+  },
+  "search": [
+    {
+      "params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.05,
+        "num_leaves": 63,
+        "subsample": 0.8
+      },
+      "validation_mae": 0.5415318658964352
+    },
+    {
+      "params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.05,
+        "num_leaves": 63,
+        "subsample": 1.0
+      },
+      "validation_mae": 0.5410712403899671
+    },
+    {
+      "params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.05,
+        "num_leaves": 127,
+        "subsample": 0.8
+      },
+      "validation_mae": 0.5416072201309439
+    },
+    {
+      "params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.05,
+        "num_leaves": 127,
+        "subsample": 1.0
+      },
+      "validation_mae": 0.5420299512190764
+    },
+    {
+      "params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.1,
+        "num_leaves": 63,
+        "subsample": 0.8
+      },
+      "validation_mae": 0.5452299976695179
+    },
+    {
+      "params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.1,
+        "num_leaves": 63,
+        "subsample": 1.0
+      },
+      "validation_mae": 0.5423755772927836
+    },
+    {
+      "params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.1,
+        "num_leaves": 127,
+        "subsample": 0.8
+      },
+      "validation_mae": 0.5488206481178183
+    },
+    {
+      "params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.1,
+        "num_leaves": 127,
+        "subsample": 1.0
+      },
+      "validation_mae": 0.546025498213189
+    },
+    {
+      "params": {
+        "colsample_bytree": 1.0,
+        "learning_rate": 0.05,
+        "num_leaves": 63,
+        "subsample": 0.8
+      },
+      "validation_mae": 0.5412446088420018
+    },
+    {
+      "params": {
+        "colsample_bytree": 1.0,
+        "learning_rate": 0.05,
+        "num_leaves": 63,
+        "subsample": 1.0
+      },
+      "validation_mae": 0.542136717326445
+    },
+    {
+      "params": {
+        "colsample_bytree": 1.0,
+        "learning_rate": 0.05,
+        "num_leaves": 127,
+        "subsample": 0.8
+      },
+      "validation_mae": 0.5414757689830787
+    },
+    {
+      "params": {
+        "colsample_bytree": 1.0,
+        "learning_rate": 0.05,
+        "num_leaves": 127,
+        "subsample": 1.0
+      },
+      "validation_mae": 0.5427030932944606
+    },
+    {
+      "params": {
+        "colsample_bytree": 1.0,
+        "learning_rate": 0.1,
+        "num_leaves": 63,
+        "subsample": 0.8
+      },
+      "validation_mae": 0.5448537437462347
+    },
+    {
+      "params": {
+        "colsample_bytree": 1.0,
+        "learning_rate": 0.1,
+        "num_leaves": 63,
+        "subsample": 1.0
+      },
+      "validation_mae": 0.5449761744281328
+    },
+    {
+      "params": {
+        "colsample_bytree": 1.0,
+        "learning_rate": 0.1,
+        "num_leaves": 127,
+        "subsample": 0.8
+      },
+      "validation_mae": 0.5456095176696029
+    },
+    {
+      "params": {
+        "colsample_bytree": 1.0,
+        "learning_rate": 0.1,
+        "num_leaves": 127,
+        "subsample": 1.0
+      },
+      "validation_mae": 0.5465281707063244
+    }
+  ],
+  "best_params": {
+    "colsample_bytree": 0.8,
+    "learning_rate": 0.05,
+    "num_leaves": 63,
+    "subsample": 1.0
+  },
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "runs": [
+    {
+      "seed": 0,
+      "validation": {
+        "mae": 0.5410712403899671,
+        "rmse": 1.1496189278274307,
+        "r2": 0.2773080533178317,
+        "mae_top10": 2.8780047027507147
+      },
+      "test": {
+        "mae": 0.5644867531052752,
+        "rmse": 1.175223278443995,
+        "r2": 0.27606842508394935,
+        "mae_top10": 2.9423086632783595
+      },
+      "fit_seconds": 7.022833416995127
+    },
+    {
+      "seed": 1,
+      "validation": {
+        "mae": 0.5402334306979275,
+        "rmse": 1.1497422847914733,
+        "r2": 0.27715295171802035,
+        "mae_top10": 2.8819684559640533
+      },
+      "test": {
+        "mae": 0.5659465781619217,
+        "rmse": 1.178972147228658,
+        "r2": 0.2714424903617302,
+        "mae_top10": 2.9823718663493315
+      },
+      "fit_seconds": 7.0043600000062725
+    },
+    {
+      "seed": 2,
+      "validation": {
+        "mae": 0.5413900466106147,
+        "rmse": 1.153782695367422,
+        "r2": 0.2720635840151029,
+        "mae_top10": 2.8997960629417756
+      },
+      "test": {
+        "mae": 0.5652166977872332,
+        "rmse": 1.1738599701725811,
+        "r2": 0.27774703284320823,
+        "mae_top10": 2.939786660171037
+      },
+      "fit_seconds": 6.975088166000205
+    },
+    {
+      "seed": 3,
+      "validation": {
+        "mae": 0.5410815942178153,
+        "rmse": 1.1518638196322113,
+        "r2": 0.2744828575815922,
+        "mae_top10": 2.898065564764303
+      },
+      "test": {
+        "mae": 0.5644572292766933,
+        "rmse": 1.1729713942258129,
+        "r2": 0.27884006562020913,
+        "mae_top10": 2.934867885163532
+      },
+      "fit_seconds": 7.034590416005813
+    },
+    {
+      "seed": 4,
+      "validation": {
+        "mae": 0.5426142639342879,
+        "rmse": 1.1541950035725212,
+        "r2": 0.2715432299045901,
+        "mae_top10": 2.9064194797536076
+      },
+      "test": {
+        "mae": 0.5639412080167007,
+        "rmse": 1.1732554440749212,
+        "r2": 0.2784907473427134,
+        "mae_top10": 2.93605888946712
+      },
+      "fit_seconds": 7.060850957990624
+    }
+  ],
+  "validation": {
+    "mae": {
+      "mean": 0.5412781151701225,
+      "std": 0.000861772225294597
+    },
+    "rmse": {
+      "mean": 1.1518405462382117,
+      "std": 0.0021595279398536464
+    },
+    "r2": {
+      "mean": 0.2745101353074274,
+      "std": 0.002720372618904011
+    },
+    "mae_top10": {
+      "mean": 2.892850853234891,
+      "std": 0.012230816963424311
+    }
+  },
+  "test": {
+    "mae": {
+      "mean": 0.5648096932695648,
+      "std": 0.0007811766423634119
+    },
+    "rmse": {
+      "mean": 1.1748564468291938,
+      "std": 0.0024588185209386427
+    },
+    "r2": {
+      "mean": 0.27651775225036207,
+      "std": 0.0030313840872956384
+    },
+    "mae_top10": {
+      "mean": 2.9470787928858764,
+      "std": 0.019950406695494367
+    }
+  },
+  "fit_seconds_mean": 7.019544591399608,
+  "versions": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "joblib": "1.6.0"
+  }
+}
