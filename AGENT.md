@@ -34,10 +34,13 @@ backend and React frontend.
 | Experiment tracking | None. Each training run writes `metrics.json` |
 | Code ownership | No CODEOWNERS. Convention: one person per algorithm folder |
 
-**Not built yet (do not assume they exist)**: FastAPI backend (`backend/` is a
-placeholder), React frontend (`frontend/` is a placeholder), Docker, CI/CD (GitHub
-Actions). Whether models get served through the API is undecided, but every
-`predict.py` is already shaped so a future API route can just import it.
+**Built (live demo)**: a FastAPI app in `backend/app/` and a React + Vite page in
+`frontend/` (map of active wildfires, coordinate box, live predictions). Live data
+clients are in `backend/live/` (see `backend/README.md` and `frontend/README.md`).
+Live samples are never added to the training split.
+
+**Not built yet (do not assume they exist)**: Docker, CI/CD (GitHub Actions). The API
+routes only import and call each algorithm's `predict()`.
 
 ---
 
@@ -77,8 +80,8 @@ ml-platform/
 │   └── processed/<dataset_name>/
 │
 ├── models/<algorithm_name>/   # model.joblib + metrics.json (not in Git)
-├── backend/                   # placeholder (FastAPI later)
-├── frontend/                  # placeholder (React later)
+├── backend/                   # FastAPI app (app/) + live data clients (live/)
+├── frontend/                  # React + Vite page
 ├── tests/                     # optional
 ├── docs/
 ├── scripts/setup.sh           # Mac/Linux one-command setup (uses pyenv)
@@ -214,10 +217,11 @@ Folder names: `lowercase_with_underscores` only (no spaces, dashes, or capitals)
 2. Keep function names/signatures backward compatible. Other algorithms depend on them.
 3. Make the change small and put it in its own PR.
 
-### F. Prepare for the (future) API
-No API exists yet. If asked, a FastAPI route should only import and call
-`algorithms.<name>.predict.predict`. Don't restructure algorithms for it. Do not build
-`backend/` or `frontend/` unless the user explicitly asks.
+### F. The API
+The FastAPI app is in `backend/app/` and only imports and calls
+`algorithms.<name>.predict.predict` (through `backend/app/predictor.py`). Don't
+restructure algorithms for it. Run it with `python -m uvicorn backend.app.main:app --reload`
+and the page with `npm run dev` in `frontend/`.
 
 ---
 
