@@ -12,7 +12,7 @@ toward them. It is the team's simple, interpretable linear model, so it shows ho
 the tree and neighbor models gain from non-linear structure.
 
 The team decided to aim every model at the median of the target, because the data is
-skewed (`docs/discussion_log.md`, entry 15). With a small `epsilon` the Huber loss is
+skewed (`docs/discussion_log.md`, entry 10). With a small `epsilon` the Huber loss is
 mostly absolute error, so it sits between median and mean regression; it is not a pure
 median model like LightGBM's `l1` objective.
 
@@ -37,8 +37,11 @@ Library: scikit-learn `HuberRegressor`. Every setting was chosen by validation M
 | `alpha` | 1e-6, 1e-4, 1e-2, 1 | **1e-4** | Strength of the L2 penalty on the coefficients. With 80K rows and 42 features (more after one-hot), little shrinkage is needed. |
 
 - **Final setting:** `epsilon=1.1`, `alpha=0.0001` (all 20 combinations tried).
-- **Defaults not tuned:** `max_iter=500` (set in `model.py` so the optimizer converges),
-  everything else.
+- **Defaults not tuned:** `max_iter=500` (set in `model.py`), everything else. The
+  optimizer stops at this limit without fully converging (scikit-learn prints a
+  `ConvergenceWarning`; it also does at 2,000). It converges at about 3,500 iterations,
+  and validation MAE is then 0.5903 instead of 0.5905, so the limit makes no practical
+  difference.
 - **Seeds:** one run (`SEEDS = [0]`). Huber regression is deterministic (an L-BFGS
   optimizer with no random steps), so more seeds would give identical results and the
   standard deviation is not applicable.
@@ -73,6 +76,11 @@ Source: `results/comparison.csv` (huber-regression row) and
   MAE is 13% lower and test MAE 12.5% lower. It improves on the baseline but is the
   weakest of the four learned models (LightGBM 0.565, random forest 0.579, KNN 0.606 on
   test).
+- **The new features helped.** With the same settings, fit on train only, the original 24
+  features (location, timing, county weather, drought score, state) give validation MAE
+  0.6028 and R² 0.018; the final 42 features give 0.5905 and 0.099. Most of the gain is
+  in R² and the fastest-10% MAE (3.556 to 3.366). This was run once in a one-off
+  script, not by `train.py`.
 - **Low R²:** about 0.08 to 0.10. A linear model explains only a small share of the
   variance, so the gain over the baseline is real but the predictions are coarse.
 - **Fast fires are the weak spot.** The MAE on the fastest 10% of fires (3.502 on test)

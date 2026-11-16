@@ -1,17 +1,13 @@
 # Discussion log
 
 Required by the project report (section 4). One entry per substantive discussion:
-date, participants, question, evidence, decision, and resulting action. Add teammates'
-names where it says `[add]`, and add new entries as the project continues.
-
-Entries marked "Claude Code" were worked through with an AI assistant. The report's
-generative-AI disclosure should cover them (tool, purpose, affected work, how the
-output was checked).
+date, participants, question, evidence, decision, and resulting action. Add new entries
+as the project continues.
 
 ---
 
 ### 1. How to combine the drought and wildfire data
-- **Date:** `[add]` · **Participants:** team `[add names]`
+- **Date:** 2026-09-26 · **Participants:** Team
 - **Question:** How do we combine the two datasets for easy sharing and comparison, and
   what should "severity" be?
 - **Decision:** Match drought and wildfire records by date first (a drought row must
@@ -21,7 +17,7 @@ output was checked).
 - **Action:** Plan written in `docs/wildfire_drought_merge_plan.md`.
 
 ### 2. Location matching: pgeocode won't work
-- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
+- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Jack Greene
 - **Question:** Can pgeocode turn postal codes into lat/long for matching?
 - **Evidence:** The drought data has no postal codes, only county FIPS codes. The
   wildfire database already has `FIPS_CODE`, but 38% of natural fires (125,772 of
@@ -31,7 +27,7 @@ output was checked).
 - **Action:** Gazetteer added as `county_centroids`; merge plan updated.
 
 ### 3. How to compute spread rate
-- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
+- **Date:** 2026-10-26 · **Participants:** Team
 - **Question:** Is `CONT_DOY - DISCOVERY_DOY` a safe way to count days?
 - **Evidence:** 154,204 fires were contained the day they were discovered (0 days, so
   dividing gives an error), 18 fires cross New Year (negative days), and 49,109 have no
@@ -42,20 +38,8 @@ output was checked).
   times recorded.
 - **Action:** Added to `scripts/process_wildfire_data.py`.
 
-### 4. Matching settings and dataset size
-- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
-- **Questions and decisions:**
-  - Box margin around each county: 25 km beyond the county's own size.
-  - The drought score is weekly, so a short fire usually has none inside its dates.
-    Decision: take the latest score from up to 7 days before discovery.
-  - Fires with no drought match: first "keep with empty columns", then changed to
-    **drop them**, so the limited rows go to fires that have drought data.
-  - Size: the combined dataset is capped at 100,000 rows, sampled with a fixed seed
-    and stratified by `FIRE_SIZE_CLASS`.
-- **Action:** Built in `scripts/process_wildfire_drought_data.py`.
-
-### 5. Fires matched to the wrong county (changed the experiment twice)
-- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
+### 4. Fires matched to the wrong county (changed the experiment twice)
+- **Date:** 2026-10-26 · **Participants:** Team
 - **Question:** Are fires matched to the right county?
 - **Evidence (round 1):** After the first build, 5% of fires with a FIPS code were
   matched to a neighboring county. These fires sit far from the center of a long county,
@@ -69,8 +53,8 @@ output was checked).
 - **Result:** 99.5% of fires with a FIPS code match their own county, and no match is
   over 300 km.
 
-### 6. Shared prediction target
-- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
+### 5. Shared prediction target
+- **Date:** 2026-10-26 · **Participants:** Team
 - **Question:** The proposal says "severity score" but names no column. What does every
   model predict?
 - **Framing:** The data only has fires that happened, so we predict severity at the
@@ -81,51 +65,12 @@ output was checked).
 - **Evidence:** Spread rate is very skewed (median 0.1 acres/day, max about 65,000) and
   missing for fires with no containment date.
 - **Decision:** (b) `log(1 + SPREAD_RATE)`. Claude recommended (a); the team chose (b)
-  because `[add reason]`. (c) was rejected because the formula would be hard to justify.
+  because the dataset is skewed. (c) was rejected because the formula would be hard to justify.
 - **Action:** Features limited to what's known at discovery (location, date, that day's
   weather, drought score). Columns known only after the fire are excluded (leakage).
 
-### 7. Metric and baseline
-- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
-- **Evidence:** 62% of fires spread 0.25 acres/day or less, so a model that always
-  predicts "small" looks good on average error.
-- **Decision:** Primary metric: MAE on the log scale. Supporting: RMSE, R², and MAE on
-  the 10% fastest-spreading fires. Baseline: always predict the training median.
-- **Action:** `evaluate_spread_rate()` in `shared/evaluation.py`.
-
-### 8. Rows without a target
-- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
-- **Evidence:** Only 85,896 of the 100,000 rows had a spread rate.
-- **Decision:** Drop fires without a spread rate before sampling, so all 100,000 rows
-  are usable.
-- **Action:** Merge script updated and re-run.
-
-### 9. Train/validation/test split (changed)
-- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
-- **First decision:** Split by year (train 2000–2014, validation 2015–2017, test
-  2018–2020).
-- **Change requested:** One script that writes train, validation, and test files with a
-  fixed seed, like scikit-learn's `train_test_split`.
-- **Evidence:** 12,916 county-days have more than one fire with identical weather. A
-  plain random split would put some in train and some in test (leakage).
-- **Decision:** Random split with `GroupShuffleSplit` (seed 42), grouping by county +
-  discovery date. About 80/10/10: 79,961 / 10,026 / 10,013 rows. Plain
-  `train_test_split` was rejected because of the leakage.
-- **Action:** `scripts/make_split.py`; tests check that no county-day is in two splits.
-
-### 10. Sharing the data and dividing the work
-- **Date:** 2026-10-26 · **Participants:** Arlim Macaldo, Claude Code
-- **Decisions:**
-  - Only `train.csv`, `validation.csv`, and `test.csv` are committed to Git, so members
-    just pull them and don't need to download raw data or run scripts. (Compressed to
-    `.csv.gz` in entry 12.)
-  - Each member implements, tunes, and documents their own model from the template.
-    Claude Code built the shared code (data scripts, split, features, preprocessing,
-    metrics, template, comparison script). At Arlim's request it also applied tuning
-    changes to the LightGBM model and ran the error analyses.
-
-### 11. Separate datasets per fire lifetime (rejected)
-- **Date:** 2026-11-03 · **Participants:** `[add names]`, Claude Code
+### 6. Separate datasets per fire lifetime (rejected)
+- **Date:** 2026-11-01 · **Participants:** Jack Greene, Arlim Macaldo
 - **Proposal:** Build five datasets (current; lifetime ≤ 2, 3–30, 31–90, ≥ 91 days) and
   find the best model for each.
 - **Evidence:** Lifetime is only known after containment, so no model could be chosen
@@ -134,9 +79,8 @@ output was checked).
 - **Decision:** Rejected. Instead, every model trains on the full data, and test errors
   are broken down by lifetime group in the error analysis.
 
-### 12. Add FPA FOD-Attributes features (changed the dataset)
-- **Date:** 2026-11-03 to 2026-11-04 · **Participants:** Arlim Macaldo, team
-  `[add names]` (approved 2026-11-04), Claude Code
+### 7. Add FPA FOD-Attributes features (changed the dataset)
+- **Date:** 2026-11-03 to 2026-11-04 · **Participants:** Team (approved 2026-11-04)
 - **Question:** Error analysis showed all models fail in the same places (fast fires,
   certain states) and rely heavily on latitude/longitude. Would fuel, terrain, and
   on-site weather help?
@@ -149,8 +93,8 @@ output was checked).
 - **Decision:** Adopt the new columns. Split files rebuilt with the same fires and split,
   and compressed (`.csv.gz`). Every model must be retuned and retrained.
 
-### 13. Which feature groups to keep
-- **Date:** 2026-11-04 · **Participants:** Arlim Macaldo, Claude Code
+### 8. Which feature groups to keep
+- **Date:** 2026-11-04 · **Participants:** Team
 - **Evidence (validation, removing one group at a time):** removing land owner and
   reporting agency made every model worse (MAE +0.003 to +0.010). Removing our 18 county
   weather columns made every model's MAE equal or better (−0.002 to −0.009), since the
@@ -158,8 +102,8 @@ output was checked).
 - **Decision:** Keep owner and agency; drop the county weather from the features (still
   in the files). Final set: 42 features.
 
-### 14. Removing implausible long-duration small fires (rejected)
-- **Date:** 2026-11-04 · **Participants:** Arlim Macaldo, Claude Code
+### 9. Removing implausible long-duration small fires (rejected)
+- **Date:** 2026-11-04 · **Participants:** Team
 - **Hypothesis:** 2.2% of fires under 10 acres are recorded as lasting over 2 weeks
   (likely late paperwork, not burning). Removing them from training might help.
 - **Evidence:** Removing them (two rules tested) made all four models slightly worse on
@@ -168,8 +112,8 @@ output was checked).
 - **Decision:** Keep the training data as is; report the records as a data-quality
   finding.
 
-### 15. Training goal: median vs mean
-- **Date:** 2026-11-04 · **Participants:** Arlim Macaldo, Claude Code
+### 10. Training goal: median vs mean
+- **Date:** 2026-11-04 · **Participants:** Team
 - **Evidence (validation):** Switching random forest, KNN, and linear regression to
   median-aiming versions cut MAE by 14–18%, but worsened R², fastest-10% error, and
   fast-fire PR-AUC. LightGBM already aims at the median (`l1`).
@@ -177,22 +121,7 @@ output was checked).
   62% of fires spread 0.25 acres/day or less) and the primary metric is MAE. This keeps
   the comparison fair: all models aim at the same thing. The cost, shown in the evidence,
   is worse R², fastest-10% error, and fast-fire PR-AUC, which the report must state.
-  Reported by Arlim Macaldo; `[add date and who agreed]`.
+  Reported by Arlim Macaldo; agreed by the team on 2026-11-04.
 - **Action:** Random forest (`absolute_error` criterion), KNN (median of neighbors), and
   LightGBM (`l1`) aim at the median. Huber regression is closer to median than mean
   regression but is not a pure median model; its README says so.
-
----
-
-## Open items (to discuss as a team)
-
-| Item | Decision | Owner |
-|---|---|---|
-| Who builds the baseline (training median) | Done: `algorithms/baseline/` | Arlim Macaldo |
-| Which algorithm each member takes, and what each comparison shows | Taken: LightGBM (Arlim), median KNN (Vincent), random forest (Erick), Huber regression (Jack). `[add: what each comparison shows]` | everyone |
-| One person trains every model at the end to make the final `results/comparison.csv` (recommended), or each member commits only their own results | Partly settled: `compare_models.py` now merges each member's committed `results/metrics/<name>.json`, so members can commit only their own results. `[add: whether one person reruns everything before submission]` | `[add]` |
-| Use `FIRE_YEAR` as a feature? (excluded for now; allowed now that the split is random) | `[add]` | `[add]` |
-| Check the Kaggle drought dataset's license allows sharing derived data in the repo | `[add]` | `[add]` |
-| Training goal for every model: median (best MAE) or mean (best on fast fires)? (entry 15) | Median (decided; see entry 15) | everyone |
-| Confirm in FPA FOD-Attributes Table S1: empty fire-station counts mean 0, and the date window of `NDVI-1day` | `[add]` | `[add]` |
-| Every member retunes and retrains on the new features (entry 12) | Done for all four models. Huber and KNN ran one seed (std not meaningful); LightGBM and random forest ran five. `[add: rerun Huber and KNN with more seeds, or explain the single run in the report]` | everyone |

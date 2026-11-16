@@ -12,7 +12,7 @@ with LightGBM's boosted trees.
 
 The forest uses `criterion="absolute_error"`, so each tree splits to reduce absolute
 error and predicts a leaf median. This aims the model at the median of the target, which
-is the team's decision because the target is skewed (`docs/discussion_log.md`, entry 15)
+is the team's decision because the target is skewed (`docs/discussion_log.md`, entry 10)
 and matches the MAE metric.
 
 ## Data

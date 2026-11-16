@@ -12,7 +12,7 @@ classification experiments.
 The model is a custom `MedianKNNRegressor` (in `model.py`): it finds the nearest
 training fires with scikit-learn's neighbor search and predicts the **median** of their
 targets, either unweighted (`uniform`) or weighted by inverse distance (`distance`). The
-team chose the median because the target is skewed (`docs/discussion_log.md`, entry 15).
+team chose the median because the target is skewed (`docs/discussion_log.md`, entry 10).
 It is the team's non-parametric, local model: it needs no assumption about the shape of
 the relationship, and shows how far "similar fires" alone can go.
 
@@ -69,7 +69,7 @@ One run. MAE and RMSE are on the log scale.
 Vincent's earlier mean-based KNN had validation MAE 0.6729 (recorded before this
 README was revised), so switching to the median lowered it by about 14%. Aiming at the
 median usually costs R² and fast-fire accuracy, the trade-off recorded in discussion log
-entry 15.
+entry 10.
 
 ## Notes
 - **Versus the baseline** (training median; test MAE 0.711): 14.7% lower. It is behind

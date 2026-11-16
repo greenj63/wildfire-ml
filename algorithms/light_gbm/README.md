@@ -137,7 +137,7 @@ lifetime, size, and state numbers below for every model (`results/error_analysis
   ecoregion 3.4%, minimum humidity 3.0%, day of year 3.0%, population 2.6%, land owner
   2.6%, precipitation 2.6%, solar radiation 2.5%. Location still matters most.
 - **Median goal:** the `l1` objective aims at the median, which is the team's decision
-  for every model because the target is skewed (`docs/discussion_log.md`, entry 15).
+  for every model because the target is skewed (`docs/discussion_log.md`, entry 10).
   The cost is the weak fast-fire result above.
 - **Ideas:** a lower alert cut-off would catch more fast fires, at the cost of more
   false alarms. A `huber` or `l2` objective would also help fast fires, but it moves the
