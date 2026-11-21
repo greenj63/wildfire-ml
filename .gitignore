@@ -29,3 +29,6 @@ models/*
 
 # Future frontend
 frontend/node_modules/
+
+# Local clone created by setup_wildfire_ml.py (its own git repo)
+wildfire_ml/
